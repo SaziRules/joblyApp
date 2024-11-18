@@ -103,6 +103,58 @@ export const onboarding = [
     },
 ];
 
+export const vacancy = [
+    {
+        id: 1,
+        title: "Create your resume",
+        description:
+            "Stand out with your custom design resume",
+        image: images.onboarding1,
+    },
+    {
+        id: 2,
+        title: "Post a vacancy",
+        description:
+            "Increase the quality of your hire.",
+        image: images.onboarding2,
+    },
+    {
+        id: 3,
+        title: "Browse Candidates",
+        description:
+            "Find the best candidate for your next hire",
+        image: images.onboarding3,
+    },
+    {
+        id: 4,
+        title: "Browse Companies",
+        description:
+            "Explore your filtered potential employers",
+        image: images.onboarding3,
+    },
+    {
+        id: 5,
+        title: "Privacy Policy",
+        description:
+            "How we collect and safely use your data",
+        image: images.onboarding3,
+    },
+    {
+        id: 6,
+        title: "Terms of Service",
+        description:
+            "Our terms for job seeker and employers",
+        image: images.onboarding3,
+    },
+    {
+        id: 7,
+        title: "Sign Out",
+        description:
+            "",
+        image: images.onboarding3,
+    },
+];
+
 export const data = {
     onboarding,
 };

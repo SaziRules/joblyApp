@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "@clerk/clerk-expo";
 import { useState } from "react";
-import CVInputField from "@/components/CVInputField";
+import InputField from "@/components/InputField";
 import QuickAction from "@/components/QuickAction";
 import { Redirect } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
@@ -22,7 +22,8 @@ const Create = () => {
   const [visible, setVisible] = useState(false);
   const [step, setStep] = useState(1); // Initialize step state
 
-  const show = () => setVisible(true);
+  const vacanyModal = () => setVisible(true);
+  const resumeModal = () => setVisible(true);
   const hide = () => setVisible(false);
 
   const signOut = async () => {
@@ -43,12 +44,16 @@ const Create = () => {
     skills: "",
     pay: "",
     deadline: "",
+    gender: "",
   });
 
   return (
     <ScrollView>
       <SafeAreaView className="flex-1">
-        <TouchableOpacity className="flex p-5 bg-white rounded-lg mx-5 mt-5">
+        <TouchableOpacity
+          onPress={resumeModal}
+          className="flex p-5 bg-white rounded-lg mx-5 mt-5"
+        >
           <View className="flex flex-row items-center justify-between">
             <View>
               <Text className="font-JakartaBold text-[16px] text-[#1e1e1e]">
@@ -67,7 +72,7 @@ const Create = () => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={show}
+          onPress={vacanyModal}
           className="flex p-5 bg-white rounded-lg mx-5 mt-5"
         >
           <View className="flex flex-row items-center justify-between">
@@ -151,7 +156,7 @@ const Create = () => {
         </TouchableOpacity>
 
         <SafeAreaView>
-          <Modal id="vacany" visible={visible} animationType="slide">
+          <Modal id="vacanyModal" visible={visible} animationType="slide">
             <ScrollView>
               <View>
                 <TouchableOpacity onPress={hide} className=" flex p-4">
@@ -218,7 +223,7 @@ const Create = () => {
               <View className="px-5">
                 {step === 1 && (
                   <>
-                    <CVInputField
+                    <InputField
                       label="1. Job title"
                       placeholder="Add a job title"
                       className="py-3"
@@ -227,7 +232,7 @@ const Create = () => {
                         setForm({ ...form, title: value })
                       }
                     />
-                    <CVInputField
+                    <InputField
                       label="2. Company name"
                       placeholder="Add your company name"
                       className="py-3"
@@ -236,7 +241,7 @@ const Create = () => {
                         setForm({ ...form, name: value })
                       }
                     />
-                    <CVInputField
+                    <InputField
                       label="3. Company logo"
                       placeholder="Upload you company logo"
                       className="py-3"
@@ -245,7 +250,7 @@ const Create = () => {
                         setForm({ ...form, logo: value })
                       }
                     />
-                    <CVInputField
+                    <InputField
                       label="4. Workplace type"
                       placeholder="Select a workplace type"
                       className="py-3"
@@ -254,7 +259,7 @@ const Create = () => {
                         setForm({ ...form, workPlace: value })
                       }
                     />
-                    <CVInputField
+                    <InputField
                       label="5. Job type"
                       placeholder="Select a job type"
                       className="py-3"
@@ -267,7 +272,7 @@ const Create = () => {
                 )}
                 {step === 2 && (
                   <>
-                    <CVInputField
+                    <InputField
                       label="1. Job location"
                       placeholder="Add your job location"
                       className="py-3"
@@ -276,7 +281,7 @@ const Create = () => {
                         setForm({ ...form, location: value })
                       }
                     />
-                    <CVInputField
+                    <InputField
                       label="2. Job description"
                       placeholder="A brief description of the job"
                       className="py-3"
@@ -285,7 +290,7 @@ const Create = () => {
                         setForm({ ...form, description: value })
                       }
                     />
-                    <CVInputField
+                    <InputField
                       label="3. Essential requirements"
                       placeholder="A brief statement about your career"
                       className="py-3"
@@ -294,7 +299,7 @@ const Create = () => {
                         setForm({ ...form, requirements: value })
                       }
                     />
-                    <CVInputField
+                    <InputField
                       label="4. Key responsibilities"
                       placeholder="A brief statement about your career"
                       className="py-3"
@@ -303,7 +308,7 @@ const Create = () => {
                         setForm({ ...form, responsibilities: value })
                       }
                     />
-                    <CVInputField
+                    <InputField
                       label="5. Essential skills"
                       placeholder="A brief statement about your career"
                       className="py-3"
@@ -316,14 +321,14 @@ const Create = () => {
                 )}
                 {step === 3 && (
                   <>
-                    <CVInputField
+                    <InputField
                       label="5. Renummeration"
                       placeholder="Your highest completed qualification"
                       className="py-3"
                       value={form.pay}
                       onChangeText={(value) => setForm({ ...form, pay: value })}
                     />
-                    <CVInputField
+                    <InputField
                       label="6. Application deadline"
                       placeholder="Other degrees or certifications"
                       className="py-3"
@@ -335,14 +340,217 @@ const Create = () => {
                   </>
                 )}
               </View>
-              <View className="flex items-center justify-center mx-5 py-5 mt-5 rounded-full bg-[#FEC300]">
+              <View className="flex items-center justify-center mx-5 py-4 mt-5 rounded-full bg-[#FEC300]">
                 <TouchableOpacity onPress={() => setStep(step + 1)}>
                   <Text className="text-[16px] font-semibold">
                     {step === 3 ? "Save & Continue" : "Next"}
                   </Text>
                 </TouchableOpacity>
               </View>
-              <View className="flex items-center justify-center mx-5 py-5 mt-5 rounded-full bg-[#2e2e2e]">
+              <View className="flex items-center justify-center mx-5 py-4 mt-5 rounded-full bg-[#2e2e2e]">
+                <TouchableOpacity onPress={hide}>
+                  <Text className="text-[16px] text-white font-semibold">
+                    Cancel
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          </Modal>
+        </SafeAreaView>
+
+        <SafeAreaView>
+          <Modal id="resumeModal" visible={visible} animationType="slide">
+            <ScrollView>
+              <View>
+                <TouchableOpacity onPress={hide} className=" flex p-4">
+                  <Image
+                    source={icons.backArrow}
+                    className="h-[24px] w-[24px]"
+                  />
+                </TouchableOpacity>
+              </View>
+              <View className="flex items-center justify-center mx-5 mb-5  mt-8">
+                <View
+                  style={{
+                    width: "100%",
+                    height: 5,
+                    backgroundColor: "#E5E5E5",
+                    borderRadius: 5,
+                    flexDirection: "row",
+                  }}
+                >
+                  <TouchableOpacity
+                    style={{
+                      width: `${(1 / 3) * 100}%`,
+                      height: "100%",
+                      backgroundColor: step === 1 ? "#FEC300" : "#E5E5E5",
+                      borderRadius: 5,
+                    }}
+                    onPress={() => setStep(1)}
+                  />
+                  <View
+                    style={{
+                      width: 3,
+                      height: "100%",
+                      backgroundColor: "#E5E5E5",
+                    }}
+                  />
+                  <TouchableOpacity
+                    style={{
+                      width: `${(1 / 3) * 100}%`,
+                      height: "100%",
+                      backgroundColor: step === 2 ? "#FEC300" : "#E5E5E5",
+                      borderRadius: 5,
+                    }}
+                    onPress={() => setStep(2)}
+                  />
+                  <View
+                    style={{
+                      width: 3,
+                      height: "100%",
+                      backgroundColor: "#E5E5E5",
+                    }}
+                  />
+                  <TouchableOpacity
+                    style={{
+                      width: `${(1 / 3) * 100}%`,
+                      height: "100%",
+                      backgroundColor: step === 3 ? "#FEC300" : "#E5E5E5",
+                      borderRadius: 5,
+                    }}
+                    onPress={() => setStep(3)}
+                  />
+                </View>
+              </View>
+
+              <View className="px-5">
+                {step === 1 && (
+                  <>
+                    <InputField
+                      label="1. Your name"
+                      placeholder="Add your name"
+                      className="py-3"
+                      value={form.title}
+                      onChangeText={(value) =>
+                        setForm({ ...form, title: value })
+                      }
+                    />
+                    <InputField
+                      label="2. Your surname"
+                      placeholder="Add your surname"
+                      className="py-3"
+                      value={form.name}
+                      onChangeText={(value) =>
+                        setForm({ ...form, name: value })
+                      }
+                    />
+                    <InputField
+                      label="3. Your Gender"
+                      placeholder="Select your gender"
+                      className="py-3"
+                      value={form.gender}
+                      onChangeText={(value) =>
+                        setForm({ ...form, gender: value })
+                      }
+                    />
+                    <InputField
+                      label="4. Your date of birth"
+                      placeholder="Sepecify your date of birth"
+                      className="py-3"
+                      value={form.workPlace}
+                      onChangeText={(value) =>
+                        setForm({ ...form, workPlace: value })
+                      }
+                    />
+                    <InputField
+                      label="5. Your Address"
+                      placeholder="Add your home address"
+                      className="py-3"
+                      value={form.jobType}
+                      onChangeText={(value) =>
+                        setForm({ ...form, jobType: value })
+                      }
+                    />
+                  </>
+                )}
+                {step === 2 && (
+                  <>
+                    <InputField
+                      label="1. Job location"
+                      placeholder="Add your job location"
+                      className="py-3"
+                      value={form.location}
+                      onChangeText={(value) =>
+                        setForm({ ...form, location: value })
+                      }
+                    />
+                    <InputField
+                      label="2. Job description"
+                      placeholder="A brief description of the job"
+                      className="py-3"
+                      value={form.description}
+                      onChangeText={(value) =>
+                        setForm({ ...form, description: value })
+                      }
+                    />
+                    <InputField
+                      label="3. Essential requirements"
+                      placeholder="A brief statement about your career"
+                      className="py-3"
+                      value={form.requirements}
+                      onChangeText={(value) =>
+                        setForm({ ...form, requirements: value })
+                      }
+                    />
+                    <InputField
+                      label="4. Key responsibilities"
+                      placeholder="A brief statement about your career"
+                      className="py-3"
+                      value={form.responsibilities}
+                      onChangeText={(value) =>
+                        setForm({ ...form, responsibilities: value })
+                      }
+                    />
+                    <InputField
+                      label="5. Essential skills"
+                      placeholder="A brief statement about your career"
+                      className="py-3"
+                      value={form.skills}
+                      onChangeText={(value) =>
+                        setForm({ ...form, skills: value })
+                      }
+                    />
+                  </>
+                )}
+                {step === 3 && (
+                  <>
+                    <InputField
+                      label="5. Renummeration"
+                      placeholder="Your highest completed qualification"
+                      className="py-3"
+                      value={form.pay}
+                      onChangeText={(value) => setForm({ ...form, pay: value })}
+                    />
+                    <InputField
+                      label="6. Application deadline"
+                      placeholder="Other degrees or certifications"
+                      className="py-3"
+                      value={form.deadline}
+                      onChangeText={(value) =>
+                        setForm({ ...form, deadline: value })
+                      }
+                    />
+                  </>
+                )}
+              </View>
+              <View className="flex items-center justify-center mx-5 py-4 mt-5 rounded-full bg-[#FEC300]">
+                <TouchableOpacity onPress={() => setStep(step + 1)}>
+                  <Text className="text-[16px] font-semibold">
+                    {step === 3 ? "Save & Continue" : "Next"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View className="flex items-center justify-center mx-5 py-4 mt-5 rounded-full bg-[#2e2e2e]">
                 <TouchableOpacity onPress={hide}>
                   <Text className="text-[16px] text-white font-semibold">
                     Cancel
