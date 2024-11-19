@@ -73,7 +73,7 @@ const Create = () => {
 
         <TouchableOpacity
           onPress={vacanyModal}
-          className="flex p-5 bg-white rounded-lg mx-5 mt-5"
+          className="flex p-5 bg-white rounded-lg mx-5 mt-3"
         >
           <View className="flex flex-row items-center justify-between">
             <View>
