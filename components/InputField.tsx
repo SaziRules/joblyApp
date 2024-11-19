@@ -15,6 +15,7 @@ const InputField = ({
   labelStyle,
   icon,
   secureTextEntry = false,
+  multiline = false,
   containerStyle,
   inputStyle,
   iconStyle,
@@ -40,6 +41,7 @@ const InputField = ({
               "rounded-full p-5 font-JakartaSemiBold text-[15] flex-1 ${inputStyle} text-left"
             }
             secureTextEntry={secureTextEntry}
+            multiline={multiline}
             {...props}
           />
         </View>

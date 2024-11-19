@@ -14,7 +14,7 @@ import { useUser } from "@clerk/clerk-expo";
 import { useState } from "react";
 import InputField from "@/components/InputField";
 import QuickAction from "@/components/QuickAction";
-import { Redirect } from "expo-router";
+import { router } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 
 const Create = () => {
@@ -23,11 +23,11 @@ const Create = () => {
   const [step, setStep] = useState(1); // Initialize step state
 
   const vacanyModal = () => setVisible(true);
-  const resumeModal = () => setVisible(true);
   const hide = () => setVisible(false);
 
   const signOut = async () => {
     await Clerk.signOut();
+    router.replace("/(auth)/sign-in");
     // Replace "Auth" with the name of your authentication screen
   };
 
@@ -51,7 +51,9 @@ const Create = () => {
     <ScrollView>
       <SafeAreaView className="flex-1">
         <TouchableOpacity
-          onPress={resumeModal}
+          onPress={() => {
+            router.replace("/(resume)/resume");
+          }}
           className="flex p-5 bg-white rounded-lg mx-5 mt-5"
         >
           <View className="flex flex-row items-center justify-between">
@@ -59,7 +61,7 @@ const Create = () => {
               <Text className="font-JakartaBold text-[16px] text-[#1e1e1e]">
                 Create your resume
               </Text>
-              <Text className="font-JakartaExtraLight text-sm text-[#9b9a9a] mt-[-5]">
+              <Text className="font-JakartaExtraLight text-sm text-[#9b9a9a] mt-[-2]">
                 Your very own professional resume.
               </Text>
             </View>
@@ -80,7 +82,7 @@ const Create = () => {
               <Text className="font-JakartaBold text-[16px] text-[#1e1e1e]">
                 Post a vacancy
               </Text>
-              <Text className="font-JakartaExtraLight text-sm text-[#9b9a9a] mt-[-5]">
+              <Text className="font-JakartaExtraLight text-sm text-[#9b9a9a] mt-[-2]">
                 Increase the quality of your hire.
               </Text>
             </View>
@@ -145,7 +147,7 @@ const Create = () => {
               <Text className="font-JakartaBold text-[16px] text-[#1e1e1e]">
                 Sign Out
               </Text>
-              <Text className="font-JakartaExtraLight text-sm text-[#9b9a9a] mt-[-5]">
+              <Text className="font-JakartaExtraLight text-sm text-[#9b9a9a] mt-[-2]">
                 {user?.emailAddresses[0].emailAddress}
               </Text>
             </View>

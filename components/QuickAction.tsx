@@ -20,7 +20,7 @@ const QuickAction = ({ title, subtitle, icon }: QuickActionProps) => {
           <Text className="font-JakartaBold text-[16px] text-[#1e1e1e]">
             {title}
           </Text>
-          <Text className="font-JakartaExtraLight text-sm text-[#9b9a9a] mt-[-5]">
+          <Text className="font-JakartaExtraLight text-sm text-[#9b9a9a] mt-[-2]">
             {subtitle}
           </Text>
         </View>
