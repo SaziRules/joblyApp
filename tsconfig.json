@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
+    "types": ["node", "firebase"],
     "strict": true,
     "paths": {
       "@/*": [
@@ -8,6 +9,10 @@
       ]
     }
   },
+  "typeRoots": [
+    "node_modules/@types"
+  ],
+  
   "include": [
     "**/*.ts",
     "**/*.tsx",

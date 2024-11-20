@@ -168,9 +168,8 @@ const Resume = () => {
           {step === 3 && (
             <>
               <InputField
-                label="Full  Name"
-                placeholder="Enter your full name"
-                icon={icons.person}
+                label="Work History"
+                placeholder="Enter the job title"
                 value={form.name}
                 onChangeText={(value) => setForm({ ...form, name: value })}
               />

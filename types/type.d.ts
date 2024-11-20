@@ -54,14 +54,19 @@ declare interface Ride {
 }
 
 declare interface Job {
-    job_title: string;
-    company_name: string;
-    salary_range: string;
-    location: string;
-    job_setting: string;
-    job_type: string;
-    post_date: string;
-    logo_image_url: string;
+    Company: string;
+    Salary: string;
+    Position: string;
+    Type: string;
+    Setting: string;
+    Description: string;
+    Deadline: string;
+    Location: string;
+    Education: string;
+    Experience: string;
+    Skills: string;
+    Duties: string;
+    Benefits: string;
 }
 
 declare interface ButtonProps extends TouchableOpacityProps {
