@@ -1,62 +1,133 @@
 import { Job } from "@/types/type";
-import { View, Text, Image, TouchableOpacity } from "react-native";
-import React from "react";
+import { View, Text, Image, TouchableOpacity, FlatList } from "react-native";
+import React, { useState, useEffect } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/firebaseConfig";
 import { icons, images } from "@/constants";
 
+const useFirestoreData = (vacancies: string) => {
+  const [data, setData] = useState<Job[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, vacancies));
+        if (querySnapshot.empty) {
+          console.log("No matching documents.");
+        } else {
+          console.log("Documents found:", querySnapshot.size);
+        }
+        const jobData = querySnapshot.docs.map((doc) => {
+          const data = doc.data() as Job;
+          console.log("Document data:", data);
+          return {
+            id: doc.id,
+            Company: data.Company,
+            Salary: data.Salary,
+            Position: data.Position,
+            Type: data.Type,
+            Location: data.Location,
+            Setting: data.Setting,
+            Description: data.Description,
+            Deadline: data.Deadline,
+            Education: data.Education,
+            Experience: data.Experience,
+            Skills: data.Skills,
+            Duties: data.Duties,
+            Benefits: data.Benefits,
+            // Add any additional fields from your documents
+          };
+        });
+        console.log("Processed job data:", jobData);
+        setData(jobData);
+        setLoading(false);
+      } catch (error) {
+        const errorMessage = (error as { message: string }).message;
+        console.error("Error fetching data:", errorMessage);
+        setError(errorMessage);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [vacancies]);
+
+  return { data, loading, error };
+};
+
 const JobCard = () => {
-  return (
-    <View className="flex py-4 px-4 bg-white mx-5 rounded-lg mt-5">
-      <View className="flex flex-row justify-between items-center">
-        <TouchableOpacity className="flex flex-row items-center justify-center space-x-2">
+  const { data, loading, error } = useFirestoreData("vacancies");
+
+  if (loading) {
+    return <Text className="text-center">Loading...</Text>;
+  }
+
+  if (error) {
+    return (
+      <Text className="text-center text-red-500">
+        Error fetching data: {error}
+      </Text>
+    );
+  }
+
+  const renderItem = ({ item }: { item: Job }) => (
+    <View key={item.id} className="p-4 mb-4 bg-white rounded-lg shadow-md">
+      <View className="flex-row justify-between items-center">
+        <TouchableOpacity className="flex-row items-center space-x-2">
           <Image
             source={images.airbnb}
             className="w-[40px] h-[40px] rounded-full items-center justify-center"
           />
           <Text className="text-[16px] text-[#9b9a9a] font-JakartaMedium">
-            Airbnb
+            {item.Company}
           </Text>
         </TouchableOpacity>
-
         <TouchableOpacity>
-          <Image source={icons.heart} className="h-[20px] w-[20px] mt-[-20]" />
+          <Image source={icons.heart} className="h-5 w-5" />
         </TouchableOpacity>
       </View>
 
-      <View className="flex pt-2">
+      <View className="pt-2">
         <TouchableOpacity>
           <Text className="font-JakartaSemiBold text-[16px] text-[#1e1e1e]">
-            Front-End Developer
+            {item.Position}
           </Text>
         </TouchableOpacity>
         <Text className="font-JakartaSemiBold text-[11px] text-[#FEC300]">
-          R20000 - R30000 / Month
+          {item.Salary} / Month
         </Text>
-        <TouchableOpacity className="bg-[#FEC300] rounded-full w-[100px] py-2 px-2 flex items-center mt-5">
-          <Text className="text-[12px] text-[#1e1e1e]">Easily Apply</Text>
+        <TouchableOpacity className="bg-[#FEC300] rounded-full w-[100px] py-2 px-2 flex items-center mt-5 mb-2">
+          <Text className="text-[12px] font-JakartaBold text-[#1e1e1e]">
+            Easily Apply
+          </Text>
         </TouchableOpacity>
       </View>
-      <View className="flex flex-row justify-between items-center mt-5">
+
+      <View className="flex-row justify-between items-center mt-2">
         <View className="flex-row space-x-1 items-center">
-          <Image source={icons.point} className="h-[20px] w-[20px]" />
+          <Image source={icons.point} className="h-5 w-5" />
           <Text className="font-Jakarta text-[12px] text-[#9b9a9a]">
-            Durban
-          </Text>
-          <Text className="font-Jakarta text-[12px] text-[#9b9a9a]">-</Text>
-          <Text className="font-Jakarta text-[12px] text-[#9b9a9a]">
-            On site
-          </Text>
-          <Text className="font-Jakarta text-[12px] text-[#9b9a9a]">-</Text>
-          <Text className="font-Jakarta text-[12px] text-[#9b9a9a]">
-            Full time
+            {item.Location} - {item.Setting} - {item.Type}
           </Text>
         </View>
-        <View className="flex-row items-center">
+        <View>
           <Text className="font-Jakarta text-[12px] text-[#9b9a9a]">
             2 weeks ago
           </Text>
         </View>
       </View>
     </View>
+  );
+
+  return (
+    <FlatList
+      data={data}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.id}
+      contentContainerStyle={{ padding: 16 }}
+    />
   );
 };
 

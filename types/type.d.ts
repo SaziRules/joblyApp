@@ -54,6 +54,7 @@ declare interface Ride {
 }
 
 declare interface Job {
+    id: Key | null | undefined;
     Company: string;
     Salary: string;
     Position: string;

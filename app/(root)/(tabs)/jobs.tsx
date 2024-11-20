@@ -37,10 +37,6 @@ const Jobs = () => {
           </View>
         </View>
         <JobCard />
-        <JobCard />
-        <JobCard />
-        <JobCard />
-        <JobCard />
       </SafeAreaView>
     </ScrollView>
   );

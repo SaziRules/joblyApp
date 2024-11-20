@@ -37,12 +37,7 @@ const Vacancy = () => {
     Benefits: string;
   }) => {
     // Submit form data to Firestore
-    const vacanciesCollection: CollectionReference = collection(
-      db,
-      "vacancies"
-    );
-
-    addDoc(vacanciesCollection, {
+    addDoc(collection(db, "vacancies"), {
       ...formData,
     })
       .then(() => {

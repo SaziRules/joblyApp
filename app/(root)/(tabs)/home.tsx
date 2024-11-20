@@ -33,10 +33,6 @@ export default function Page() {
         </View>
 
         <JobCard />
-        <JobCard />
-        <JobCard />
-        <JobCard />
-        <JobCard />
       </SafeAreaView>
     </ScrollView>
   );
