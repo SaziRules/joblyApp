@@ -38,7 +38,7 @@ const InputField = ({
           )}
           <TextInput
             className={
-              "rounded-full p-5 font-JakartaSemiBold text-[15] flex-1 ${inputStyle} text-left"
+              "rounded-full p-5 font-JakartaSemiBold text-[13px] flex-1 ${inputStyle} text-left"
             }
             secureTextEntry={secureTextEntry}
             multiline={multiline}

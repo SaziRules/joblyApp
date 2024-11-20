@@ -97,6 +97,9 @@ const Create = () => {
         </TouchableOpacity>
 
         <QuickAction
+          onPress={() => {
+            router.replace("/(docs)/privacy");
+          }}
           title="Browse Candidates"
           subtitle="Find the best candidate for your next hire."
           icon={
@@ -108,6 +111,9 @@ const Create = () => {
         />
 
         <QuickAction
+          onPress={() => {
+            router.replace("/(docs)/privacy");
+          }}
           title="Browse Companies"
           subtitle="Let's make your next great hire happen."
           icon={
@@ -119,6 +125,9 @@ const Create = () => {
         />
 
         <QuickAction
+          onPress={() => {
+            router.replace("/(docs)/privacy");
+          }}
           title="Privacy Policy"
           subtitle="How we collect and safely use your data."
           icon={
@@ -130,6 +139,9 @@ const Create = () => {
         />
 
         <QuickAction
+          onPress={() => {
+            router.replace("/(docs)/terms");
+          }}
           title="Terms"
           subtitle="Terms of service for job seekers & empl.."
           icon={

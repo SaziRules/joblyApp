@@ -1,30 +1,26 @@
 import { icons, images } from "@/constants";
-import { Alert, Image, ScrollView, Text, View } from "react-native";
+import {
+  Alert,
+  Image,
+  ScrollView,
+  Text,
+  View,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 import InputField from "@/components/InputField";
 import { useState } from "react";
 import CustomButton from "@/components/CustomButton";
 import { router } from "expo-router";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { StyleSheet } from "react-native";
-
-const styles = StyleSheet.create({
-  modal: {
-    justifyContent: "flex-end",
-    margin: 0,
-  },
-});
+import "firebase/firestore";
+import { collection, addDoc, CollectionReference } from "firebase/firestore";
 
 const Resume = () => {
-  const [isModalVisible, setModalVisibility] = useState(false);
-
-  const showModal = () => {
-    setModalVisibility(true);
-  };
-
-  const hideModal = () => {
-    setModalVisibility(false);
-  };
-  const [step, setStep] = useState(1); // Initialize step state
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [step, setStep] = useState(1);
+  const [skills, setSkills] = useState<string[]>([]); // Initialize skills state
+  const [skillInput, setSkillInput] = useState("");
 
   const [form, setForm] = useState({
     name: "",
@@ -34,9 +30,13 @@ const Resume = () => {
     email: "",
     phone: "",
     summary: "",
+    education: "",
+    workHistory: "",
+    references: "",
+    skill: "",
+    certification: "",
+    language: "",
   });
-
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -63,6 +63,26 @@ const Resume = () => {
     }
   };
 
+  const handleSkillChange = (text: string) => {
+    setSkillInput(text);
+  };
+
+  const addSkill = () => {
+    if (skillInput.trim() !== "") {
+      setSkills([...skills, skillInput.trim()]);
+      setSkillInput("");
+    }
+  };
+
+  const removeSkill = (index: number) => {
+    const newSkills = skills.filter((_, i) => i !== index);
+    setSkills(newSkills);
+  };
+
+  const selectGender = (gender: string) => {
+    setForm({ ...form, gender });
+  };
+
   return (
     <ScrollView className="flex-1 bg-white">
       <View className="flex-1 bg-white">
@@ -76,23 +96,51 @@ const Resume = () => {
           {step === 1 && (
             <>
               <InputField
-                label="Full  Name"
+                label="Full Name"
                 placeholder="Enter your full name"
-                icon={icons.person}
                 value={form.name}
                 onChangeText={(value) => setForm({ ...form, name: value })}
               />
-              <InputField
-                label="Gender"
-                placeholder="Select your gender"
-                icon={icons.person}
-                value={form.gender}
-                onChangeText={(value) => setForm({ ...form, gender: value })}
-              />
+              <View className="mb-3 mt-2">
+                <Text className="text-lg font-JakartaSemiBold mb-3">
+                  Gender
+                </Text>
+                <View className="flex-row">
+                  <TouchableOpacity
+                    className={`flex-1 py-4 px-3 bg-neutral-100 rounded-full items-center mx-2 ${
+                      form.gender === "Male" ? "bg-[#FEC300]" : ""
+                    }`}
+                    onPress={() => selectGender("Male")}
+                  >
+                    <Text
+                      className={`text-lg font-Jakarta ${
+                        form.gender === "Male" ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      Male
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    className={`flex-1 py-4 px-3 bg-neutral-100 rounded-full items-center mx-2 ${
+                      form.gender === "Female" ? "bg-[#FEC300]" : ""
+                    }`}
+                    onPress={() => selectGender("Female")}
+                  >
+                    <Text
+                      className={`text-lg font-Jakarta ${
+                        form.gender === "Female"
+                          ? "text-white"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      Female
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
               <InputField
                 label="Date Of Birth"
                 placeholder="Enter your date of birth"
-                icon={icons.person}
                 value={form.birthday}
                 onTouchEnd={showDatePicker}
               />
@@ -103,9 +151,8 @@ const Resume = () => {
                 onCancel={hideDatePicker}
               />
               <InputField
-                label="Your Location"
+                label="Location"
                 placeholder="Enter your physical address"
-                icon={icons.map}
                 value={form.location}
                 onChangeText={(value) => setForm({ ...form, location: value })}
               />
@@ -128,16 +175,14 @@ const Resume = () => {
           {step === 2 && (
             <>
               <InputField
-                label="Your Email"
+                label="Email"
                 placeholder="Enter your email address"
-                icon={icons.email}
                 value={form.email}
                 onChangeText={(value) => setForm({ ...form, email: value })}
               />
               <InputField
-                label="Contact Number"
+                label="Phone Number"
                 placeholder="Enter your contact number"
-                icon={icons.person}
                 value={form.phone}
                 onChangeText={(value) => setForm({ ...form, phone: value })}
               />
@@ -156,11 +201,9 @@ const Resume = () => {
                 onPress={() => setStep(step + 1)}
               />
               <CustomButton
-                title="Cancel"
+                title="Previous"
                 className="mt-6 bg-[#2e2e2e]"
-                onPress={() => {
-                  router.replace("/(tabs)/create");
-                }}
+                onPress={() => setStep(step - 1)}
               />
             </>
           )}
@@ -168,31 +211,32 @@ const Resume = () => {
           {step === 3 && (
             <>
               <InputField
+                label="Education"
+                placeholder="Enter your education details"
+                value={form.education}
+                onChangeText={(value) => setForm({ ...form, education: value })}
+              />
+              <InputField
                 label="Work History"
-                placeholder="Enter the job title"
-                value={form.name}
-                onChangeText={(value) => setForm({ ...form, name: value })}
+                placeholder="Enter your work experience"
+                value={form.workHistory}
+                onChangeText={(value) =>
+                  setForm({ ...form, workHistory: value })
+                }
               />
               <InputField
-                label="Gender"
-                placeholder="Select your gender"
-                icon={icons.person}
-                value={form.gender}
-                onChangeText={(value) => setForm({ ...form, gender: value })}
+                label="Skills"
+                placeholder="Enter your skills seperated by a (,) comma"
+                value={form.skill}
+                onChangeText={(value) => setForm({ ...form, skill: value })}
               />
               <InputField
-                label="Date Of Birth"
-                placeholder="Enter your date of birth"
-                icon={icons.person}
-                value={form.birthday}
-                onChangeText={(value) => setForm({ ...form, birthday: value })}
-              />
-              <InputField
-                label="Your Location"
-                placeholder="Enter your physical address"
-                icon={icons.map}
-                value={form.location}
-                onChangeText={(value) => setForm({ ...form, location: value })}
+                label="Certification"
+                placeholder="Enter your acquired certifications"
+                value={form.certification}
+                onChangeText={(value) =>
+                  setForm({ ...form, certification: value })
+                }
               />
 
               <CustomButton
@@ -201,11 +245,9 @@ const Resume = () => {
                 onPress={() => setStep(step + 1)}
               />
               <CustomButton
-                title="Cancel"
+                title="Previous"
                 className="mt-6 bg-[#2e2e2e]"
-                onPress={() => {
-                  router.replace("/(tabs)/create");
-                }}
+                onPress={() => setStep(step - 1)}
               />
             </>
           )}
@@ -213,91 +255,35 @@ const Resume = () => {
           {step === 4 && (
             <>
               <InputField
-                label="Full  Name"
-                placeholder="Enter your full name"
-                icon={icons.person}
-                value={form.name}
-                onChangeText={(value) => setForm({ ...form, name: value })}
+                label="References"
+                placeholder="Enter your references"
+                value={form.references}
+                onChangeText={(value) =>
+                  setForm({ ...form, references: value })
+                }
               />
               <InputField
-                label="Gender"
-                placeholder="Select your gender"
-                icon={icons.person}
-                value={form.gender}
-                onChangeText={(value) => setForm({ ...form, gender: value })}
+                label="Languages"
+                placeholder="Enter your languages"
+                value={form.language}
+                onChangeText={(value) => setForm({ ...form, language: value })}
               />
               <InputField
-                label="Date Of Birth"
-                placeholder="Enter your date of birth"
-                icon={icons.person}
-                value={form.birthday}
-                onChangeText={(value) => setForm({ ...form, birthday: value })}
-              />
-              <InputField
-                label="Your Location"
-                placeholder="Enter your physical address"
-                icon={icons.map}
-                value={form.location}
-                onChangeText={(value) => setForm({ ...form, location: value })}
+                label="LinkedIn Profile"
+                placeholder="Enter your linkedin profile link"
+                value={form.language}
+                onChangeText={(value) => setForm({ ...form, language: value })}
               />
 
               <CustomButton
-                title="Next"
+                title="Submit"
                 className="mt-6"
-                onPress={() => setStep(step + 1)}
+                onPress={() => Alert.alert("Resume submitted successfully!")}
               />
               <CustomButton
-                title="Cancel"
+                title="Previous"
                 className="mt-6 bg-[#2e2e2e]"
-                onPress={() => {
-                  router.replace("/(tabs)/create");
-                }}
-              />
-            </>
-          )}
-
-          {step === 5 && (
-            <>
-              <InputField
-                label="Full  Name"
-                placeholder="Enter your full name"
-                icon={icons.person}
-                value={form.name}
-                onChangeText={(value) => setForm({ ...form, name: value })}
-              />
-              <InputField
-                label="Gender"
-                placeholder="Select your gender"
-                icon={icons.person}
-                value={form.gender}
-                onChangeText={(value) => setForm({ ...form, gender: value })}
-              />
-              <InputField
-                label="Date Of Birth"
-                placeholder="Enter your date of birth"
-                icon={icons.person}
-                value={form.birthday}
-                onChangeText={(value) => setForm({ ...form, birthday: value })}
-              />
-              <InputField
-                label="Your Location"
-                placeholder="Enter your physical address"
-                icon={icons.map}
-                value={form.location}
-                onChangeText={(value) => setForm({ ...form, location: value })}
-              />
-
-              <CustomButton
-                title="Next"
-                className="mt-6"
-                onPress={() => setStep(step + 1)}
-              />
-              <CustomButton
-                title="Cancel"
-                className="mt-6 bg-[#2e2e2e]"
-                onPress={() => {
-                  router.replace("/(tabs)/create");
-                }}
+                onPress={() => setStep(step - 1)}
               />
             </>
           )}

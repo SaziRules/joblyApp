@@ -73,7 +73,7 @@ const JobCard = () => {
   }
 
   const renderItem = ({ item }: { item: Job }) => (
-    <View key={item.id} className="p-4 mb-4 bg-white rounded-lg shadow-md">
+    <View key={item.id} className="flex py-4 px-4 bg-white rounded-lg mt-5">
       <View className="flex-row justify-between items-center">
         <TouchableOpacity className="flex-row items-center space-x-2">
           <Image
