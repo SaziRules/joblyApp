@@ -5,45 +5,11 @@ import { icons, images } from "@/constants";
 import { router } from "expo-router";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { db } from "@/firebaseConfig";
-import firebase from "firebase/compat/app";
-import "firebase/firestore";
-import { collection, addDoc, CollectionReference } from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
 import CustomButton from "@/components/CustomButton";
 
-const profiledata = () => {
+const ProfileData = () => {
   const [step, setStep] = useState(1); // Initialize step state
-
-  const submitUserData = () => {
-    // Validate form data (if necessary)
-
-    // Call the new function to submit form data to Firestore
-    submitToFirestore(form);
-  };
-
-  // ...
-  const submitToFirestore = (formData: {
-    first_name: string;
-    last_name: string;
-    contact_number: string;
-    email: string;
-    gender: string;
-    location: string;
-    birth_date: string;
-    alt_number: string;
-  }) => {
-    // Submit form data to Firestore
-    addDoc(collection(db, "users"), {
-      ...formData,
-    })
-      .then(() => {
-        Alert.alert("User information submitted successfully!");
-        router.replace("/(tabs)/profile");
-      })
-      .catch((error: { message: string | undefined }) => {
-        Alert.alert("Error submitting user information:", error.message);
-      });
-  };
-
   const [form, setForm] = useState({
     first_name: "",
     last_name: "",
@@ -54,7 +20,6 @@ const profiledata = () => {
     birth_date: "",
     alt_number: "",
   });
-
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
   const showDatePicker = () => {
@@ -82,6 +47,33 @@ const profiledata = () => {
     }
   };
 
+  const handleInputChange = (name: string, value: string) => {
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: value,
+    }));
+  };
+
+  const validateForm = () => {
+    return Object.values(form).every((value) => value.trim() !== "");
+  };
+
+  const submitUserData = async () => {
+    if (!validateForm()) {
+      Alert.alert("Error", "Please fill out all fields.");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "users"), form);
+      Alert.alert("User information submitted successfully!");
+      router.replace("/(tabs)/profile");
+    } catch (error) {
+      const errorMessage = (error as { message: string }).message;
+      Alert.alert("Error submitting user information:", errorMessage);
+    }
+  };
+
   return (
     <ScrollView className="flex-1 bg-white">
       <View className="flex-1 bg-white">
@@ -96,20 +88,18 @@ const profiledata = () => {
             <>
               <InputField
                 label="First Name"
-                placeholder="Enter your firstname"
+                placeholder="Enter your first name"
                 value={form.first_name}
-                onChangeText={(value) =>
-                  setForm({ ...form, first_name: value })
-                }
+                onChangeText={(value) => handleInputChange("first_name", value)}
               />
               <InputField
                 label="Last Name"
                 placeholder="Enter your last name"
                 value={form.last_name}
-                onChangeText={(value) => setForm({ ...form, last_name: value })}
+                onChangeText={(value) => handleInputChange("last_name", value)}
               />
               <InputField
-                label="Date of  Birth"
+                label="Date of Birth"
                 placeholder="Enter date of birth"
                 value={form.birth_date}
                 onTouchEnd={showDatePicker}
@@ -122,9 +112,9 @@ const profiledata = () => {
               />
               <InputField
                 label="Your Gender"
-                placeholder="Enter your dender"
+                placeholder="Enter your gender"
                 value={form.gender}
-                onChangeText={(value) => setForm({ ...form, gender: value })}
+                onChangeText={(value) => handleInputChange("gender", value)}
               />
 
               <CustomButton
@@ -146,31 +136,29 @@ const profiledata = () => {
             <>
               <InputField
                 label="Your Location"
-                placeholder="Tell us where you're want to"
+                placeholder="Tell us where you're located"
                 value={form.location}
-                onChangeText={(value) => setForm({ ...form, location: value })}
+                onChangeText={(value) => handleInputChange("location", value)}
               />
               <InputField
                 label="Your Email"
                 placeholder="Enter your email address"
                 value={form.email}
-                onChangeText={(value) => setForm({ ...form, email: value })}
+                onChangeText={(value) => handleInputChange("email", value)}
               />
               <InputField
                 label="Contact Number"
                 placeholder="Enter your contact number"
                 value={form.contact_number}
                 onChangeText={(value) =>
-                  setForm({ ...form, contact_number: value })
+                  handleInputChange("contact_number", value)
                 }
               />
               <InputField
                 label="Alternative Number"
                 placeholder="Enter an alternative number"
                 value={form.alt_number}
-                onChangeText={(value) =>
-                  setForm({ ...form, alt_number: value })
-                }
+                onChangeText={(value) => handleInputChange("alt_number", value)}
               />
 
               <CustomButton
@@ -191,4 +179,4 @@ const profiledata = () => {
   );
 };
 
-export default profiledata;
+export default ProfileData;

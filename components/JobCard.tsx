@@ -22,26 +22,11 @@ const useFirestoreData = (vacancies: string) => {
         }
         const jobData = querySnapshot.docs.map((doc) => {
           const data = doc.data() as Job;
-          console.log("Document data:", data);
           return {
+            ...data,
             id: doc.id,
-            Company: data.Company,
-            Salary: data.Salary,
-            Position: data.Position,
-            Type: data.Type,
-            Location: data.Location,
-            Setting: data.Setting,
-            Description: data.Description,
-            Deadline: data.Deadline,
-            Education: data.Education,
-            Experience: data.Experience,
-            Skills: data.Skills,
-            Duties: data.Duties,
-            Benefits: data.Benefits,
-            // Add any additional fields from your documents
           };
         });
-        console.log("Processed job data:", jobData);
         setData(jobData);
         setLoading(false);
       } catch (error) {
@@ -102,7 +87,12 @@ const JobCard = () => {
         <TouchableOpacity
           className="bg-[#FEC300] rounded-full w-[100px] py-2 px-2 flex items-center mt-5 mb-2"
           onPress={() => {
-            router.replace("/(docs)/jobspec");
+            router.push({
+              pathname: "/(docs)/jobspec",
+              params: {
+                job: JSON.stringify(item),
+              },
+            });
           }}
         >
           <Text className="text-[12px] font-JakartaBold text-[#1e1e1e]">

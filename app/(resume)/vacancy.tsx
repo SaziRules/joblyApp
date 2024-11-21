@@ -5,50 +5,11 @@ import { icons, images } from "@/constants";
 import { router } from "expo-router";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { db } from "@/firebaseConfig";
-import firebase from "firebase/compat/app";
-import "firebase/firestore";
-import { collection, addDoc, CollectionReference } from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
 import CustomButton from "@/components/CustomButton";
 
 const Vacancy = () => {
   const [step, setStep] = useState(1); // Initialize step state
-
-  const submitVacancy = () => {
-    // Validate form data (if necessary)
-
-    // Call the new function to submit form data to Firestore
-    submitToFirestore(form);
-  };
-
-  // ...
-  const submitToFirestore = (formData: {
-    Company: string;
-    Salary: string;
-    Position: string;
-    Type: string;
-    Setting: string;
-    Description: string;
-    Deadline: string;
-    Location: string;
-    Education: string;
-    Experience: string;
-    Skills: string;
-    Duties: string;
-    Benefits: string;
-  }) => {
-    // Submit form data to Firestore
-    addDoc(collection(db, "vacancies"), {
-      ...formData,
-    })
-      .then(() => {
-        Alert.alert("Vacancy created successfully!");
-        router.replace("/(tabs)/create");
-      })
-      .catch((error: { message: string | undefined }) => {
-        Alert.alert("Error creating vacancy:", error.message);
-      });
-  };
-
   const [form, setForm] = useState({
     Company: "",
     Salary: "",
@@ -64,7 +25,6 @@ const Vacancy = () => {
     Duties: "",
     Benefits: "",
   });
-
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
   const showDatePicker = () => {
@@ -92,6 +52,32 @@ const Vacancy = () => {
     }
   };
 
+  const handleInputChange = (name: string, value: string) => {
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: value,
+    }));
+  };
+
+  const validateForm = () => {
+    return Object.values(form).every((value) => value.trim() !== "");
+  };
+
+  const submitVacancy = async () => {
+    if (!validateForm()) {
+      Alert.alert("Error", "Please fill out all fields.");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "vacancies"), form);
+      Alert.alert("Success", "Vacancy created successfully!");
+      router.replace("/(tabs)/create");
+    } catch (error) {
+      Alert.alert("Error", "Failed to create vacancy. Please try again.");
+    }
+  };
+
   return (
     <ScrollView className="flex-1 bg-white">
       <View className="flex-1 bg-white">
@@ -105,16 +91,16 @@ const Vacancy = () => {
           {step === 1 && (
             <>
               <InputField
-                label="Company  Name"
+                label="Company Name"
                 placeholder="Enter the hiring company name"
                 value={form.Company}
-                onChangeText={(value) => setForm({ ...form, Company: value })}
+                onChangeText={(value) => handleInputChange("Company", value)}
               />
               <InputField
                 label="Position"
                 placeholder="Enter the vacant job title"
                 value={form.Position}
-                onChangeText={(value) => setForm({ ...form, Position: value })}
+                onChangeText={(value) => handleInputChange("Position", value)}
               />
               <InputField
                 label="Deadline"
@@ -132,13 +118,12 @@ const Vacancy = () => {
                 label="Job Location"
                 placeholder="Enter job location"
                 value={form.Location}
-                onChangeText={(value) => setForm({ ...form, Location: value })}
+                onChangeText={(value) => handleInputChange("Location", value)}
               />
-
               <CustomButton
                 title="Next"
                 className="mt-6"
-                onPress={() => setStep(step + 1)}
+                onPress={() => setStep(2)}
               />
               <CustomButton
                 title="Cancel"
@@ -158,7 +143,7 @@ const Vacancy = () => {
                 value={form.Description}
                 multiline
                 onChangeText={(value) =>
-                  setForm({ ...form, Description: value })
+                  handleInputChange("Description", value)
                 }
                 className="rounded-lg h-[130px] bg-neutral-100"
               />
@@ -167,19 +152,18 @@ const Vacancy = () => {
                 placeholder="Write the job duties in detail"
                 value={form.Duties}
                 multiline
-                onChangeText={(value) => setForm({ ...form, Duties: value })}
+                onChangeText={(value) => handleInputChange("Duties", value)}
                 className="rounded-lg h-[130px] bg-neutral-100"
               />
-
               <CustomButton
                 title="Next"
                 className="mt-6"
-                onPress={() => setStep(step + 1)}
+                onPress={() => setStep(3)}
               />
               <CustomButton
                 title="Previous"
                 className="mt-6 bg-[#2e2e2e]"
-                onPress={() => setStep(step - 1)}
+                onPress={() => setStep(1)}
               />
             </>
           )}
@@ -190,36 +174,35 @@ const Vacancy = () => {
                 label="Skills"
                 placeholder="Enter required skills"
                 value={form.Skills}
-                onChangeText={(value) => setForm({ ...form, Skills: value })}
+                onChangeText={(value) => handleInputChange("Skills", value)}
               />
               <InputField
                 label="Education"
                 placeholder="Enter the required qualification"
                 value={form.Education}
-                onChangeText={(value) => setForm({ ...form, Education: value })}
+                onChangeText={(value) => handleInputChange("Education", value)}
               />
               <InputField
                 label="Job Type"
                 placeholder="Specify the job type"
                 value={form.Type}
-                onChangeText={(value) => setForm({ ...form, Type: value })}
+                onChangeText={(value) => handleInputChange("Type", value)}
               />
               <InputField
                 label="Job Setting"
                 placeholder="Specify the job setting"
                 value={form.Setting}
-                onChangeText={(value) => setForm({ ...form, Setting: value })}
+                onChangeText={(value) => handleInputChange("Setting", value)}
               />
-
               <CustomButton
                 title="Next"
                 className="mt-6"
-                onPress={() => setStep(step + 1)}
+                onPress={() => setStep(4)}
               />
               <CustomButton
                 title="Previous"
                 className="mt-6 bg-[#2e2e2e]"
-                onPress={() => setStep(step - 1)}
+                onPress={() => setStep(2)}
               />
             </>
           )}
@@ -230,29 +213,26 @@ const Vacancy = () => {
                 label="Renumeration"
                 placeholder="Enter the salary range"
                 value={form.Salary}
-                onChangeText={(value) => setForm({ ...form, Salary: value })}
+                onChangeText={(value) => handleInputChange("Salary", value)}
               />
               <InputField
                 label="Benefits"
                 placeholder="Enter job incentives"
                 value={form.Benefits}
-                onChangeText={(value) => setForm({ ...form, Benefits: value })}
+                onChangeText={(value) => handleInputChange("Benefits", value)}
               />
               <InputField
                 label="Experience"
                 placeholder="Specify required experience"
                 value={form.Experience}
-                onChangeText={(value) =>
-                  setForm({ ...form, Experience: value })
-                }
+                onChangeText={(value) => handleInputChange("Experience", value)}
               />
               <InputField
                 label="Advantages"
                 placeholder="Specify the job advantages"
                 value={form.Setting}
-                onChangeText={(value) => setForm({ ...form, Setting: value })}
+                onChangeText={(value) => handleInputChange("Setting", value)}
               />
-
               <CustomButton
                 title="Create Vacancy"
                 className="mt-6"
