@@ -5,8 +5,9 @@ import { icons, images } from "@/constants";
 import { router } from "expo-router";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { db } from "@/firebaseConfig";
-import { collection, addDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore"; // Updated import
 import CustomButton from "@/components/CustomButton";
+import { useUser } from "@clerk/clerk-expo"; // Hook to get logged-in user
 
 const ProfileData = () => {
   const [step, setStep] = useState(1); // Initialize step state
@@ -21,6 +22,8 @@ const ProfileData = () => {
     alt_number: "",
   });
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+  const { user } = useUser(); // Get logged-in user
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -64,13 +67,19 @@ const ProfileData = () => {
       return;
     }
 
-    try {
-      await addDoc(collection(db, "users"), form);
-      Alert.alert("User information submitted successfully!");
-      router.replace("/(tabs)/profile");
-    } catch (error) {
-      const errorMessage = (error as { message: string }).message;
-      Alert.alert("Error submitting user information:", errorMessage);
+    if (user?.id) {
+      // Ensure user.id is defined and not null
+      try {
+        const userDocRef = doc(db, "users", user.id); // Use logged-in user's ID
+        await updateDoc(userDocRef, form);
+        Alert.alert("User information updated successfully!");
+        router.replace("/(tabs)/profile");
+      } catch (error) {
+        const errorMessage = (error as { message: string }).message;
+        Alert.alert("Error updating user information:", errorMessage);
+      }
+    } else {
+      Alert.alert("Error", "User is not logged in.");
     }
   };
 

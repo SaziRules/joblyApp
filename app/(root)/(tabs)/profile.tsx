@@ -4,14 +4,44 @@ import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "@clerk/clerk-expo";
 import { db } from "@/firebaseConfig";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 
 const Profile = () => {
   const { user } = useUser();
+  const [profileData, setProfileData] = useState({
+    full_name: "",
+    email: "",
+    contact_number: "",
+    gender: "",
+  });
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (user?.id) {
+        const docRef = doc(db, "users", user.id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setProfileData({
+            full_name: `${data.first_name} ${data.last_name}`,
+            email: data.email,
+            contact_number: data.contact_number,
+            gender: data.gender,
+          });
+        } else {
+          console.log("No such document!");
+        }
+      }
+    };
+
+    fetchProfileData();
+  }, [user?.id]);
+
   return (
     <ScrollView>
       <SafeAreaView>
-        <View className=" flex px-5 pt-10 items-center justify-center">
+        <View className="flex px-5 pt-10 items-center justify-center">
           <ProfileHeader />
         </View>
         <View>
@@ -27,7 +57,7 @@ const Profile = () => {
                   <Text className="text-[16px] font-semibold text-[#1e1e1e]">
                     Front-End Developer
                   </Text>
-                  <Text className=" text-[11px] text-[#9b9a9a] ">
+                  <Text className="text-[11px] text-[#9b9a9a]">
                     Last updated 18.11.2023
                   </Text>
                 </View>
@@ -43,7 +73,7 @@ const Profile = () => {
                   <Text className="text-[16px] font-semibold text-[#1e1e1e]">
                     .Net Developer
                   </Text>
-                  <Text className=" text-[11px] text-[#9b9a9a] ">
+                  <Text className="text-[11px] text-[#9b9a9a]">
                     Last updated 14.02.2024
                   </Text>
                 </View>
@@ -69,9 +99,9 @@ const Profile = () => {
                     Full Name
                   </Text>
                 </View>
-                <View className=" flex flex-row items-center space-x-3 justify-between">
-                  <Text className="text-[11px] text-[#9b9a9a] ">
-                    Martha Solvaik
+                <View className="flex flex-row items-center space-x-3 justify-between">
+                  <Text className="text-[11px] text-[#9b9a9a]">
+                    {profileData.full_name}
                   </Text>
                 </View>
               </View>
@@ -84,9 +114,9 @@ const Profile = () => {
                     Email
                   </Text>
                 </View>
-                <View className=" flex flex-row items-center space-x-3 justify-between">
-                  <Text className="text-[11px] text-[#9b9a9a] ">
-                    {user?.emailAddresses[0].emailAddress}
+                <View className="flex flex-row items-center space-x-3 justify-between">
+                  <Text className="text-[11px] text-[#9b9a9a]">
+                    {profileData.email}
                   </Text>
                 </View>
               </View>
@@ -99,9 +129,9 @@ const Profile = () => {
                     Contact Number
                   </Text>
                 </View>
-                <View className=" flex flex-row items-center space-x-3 justify-between">
-                  <Text className="text-[11px] text-[#9b9a9a] ">
-                    +27 86 456 7890
+                <View className="flex flex-row items-center space-x-3 justify-between">
+                  <Text className="text-[11px] text-[#9b9a9a]">
+                    {profileData.contact_number}
                   </Text>
                 </View>
               </View>
@@ -114,8 +144,10 @@ const Profile = () => {
                     Gender
                   </Text>
                 </View>
-                <View className=" flex flex-row items-center space-x-3 justify-between">
-                  <Text className="text-[11px] text-[#9b9a9a] ">Female</Text>
+                <View className="flex flex-row items-center space-x-3 justify-between">
+                  <Text className="text-[11px] text-[#9b9a9a]">
+                    {profileData.gender}
+                  </Text>
                 </View>
               </View>
             </TouchableOpacity>

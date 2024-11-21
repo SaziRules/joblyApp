@@ -1,11 +1,13 @@
 import { View, Text, ScrollView, Image } from "react-native";
 import React from "react";
 import { images } from "@/constants";
+import CustomButton from "@/components/CustomButton";
+import { router } from "expo-router";
 
 const terms = () => {
   return (
-    <ScrollView className="flex-1 bg-white">
-      <View className="flex-1 bg-white">
+    <View className="flex-1 bg-white">
+      <ScrollView className="flex-1 bg-white">
         <View className="relative w-full h-[250px]">
           <Image
             source={images.signUpCar}
@@ -156,8 +158,18 @@ const terms = () => {
             or entities:
           </Text>
         </View>
+      </ScrollView>
+      <View className="absolute bottom-0 w-full mb-4 p-4">
+        <CustomButton title="Download" />
+        <CustomButton
+          title="Close"
+          className="bg-[#2e2e2e] mt-4"
+          onPress={() => {
+            router.replace("/(tabs)/create");
+          }}
+        />
       </View>
-    </ScrollView>
+    </View>
   );
 };
 

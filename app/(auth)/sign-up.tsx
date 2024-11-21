@@ -8,7 +8,7 @@ import OAuth from "@/components/OAuth";
 import { useSignUp } from "@clerk/clerk-expo";
 import { ReactNativeModal } from "react-native-modal";
 import { db } from "@/firebaseConfig"; // Ensure Firebase is configured properly
-import { collection, addDoc } from "firebase/firestore";
+import { collection, doc, setDoc } from "firebase/firestore"; // Updated import
 
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -60,11 +60,15 @@ const SignUp = () => {
         await setActive({ session: completeSignUp.createdSessionId });
 
         // Save user to Firestore
-        await addDoc(collection(db, "users"), {
-          name: form.name,
-          email: form.email,
-          createdAt: new Date(),
-        });
+        const userId = completeSignUp.createdUserId;
+        if (userId) {
+          // Ensure userId is not null
+          await setDoc(doc(db, "users", userId), {
+            name: form.name,
+            email: form.email,
+            createdAt: new Date(),
+          });
+        }
 
         setVerification({
           ...verification,
@@ -130,7 +134,7 @@ const SignUp = () => {
             href={"/(auth)/sign-in"}
             className="text-lg text-center text-general-200 mt-10"
           >
-            <Text>Already have and account? </Text>
+            <Text>Already have an account? </Text>
             <Text className="text-[#FEC300]">Login</Text>
           </Link>
         </View>

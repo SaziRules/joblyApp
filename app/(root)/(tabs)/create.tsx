@@ -98,7 +98,7 @@ const Create = () => {
 
         <QuickAction
           onPress={() => {
-            router.replace("/(docs)/privacy");
+            router.replace("/(tabs)/create");
           }}
           title="Browse Candidates"
           subtitle="Find the best candidate for your next hire."
@@ -112,7 +112,7 @@ const Create = () => {
 
         <QuickAction
           onPress={() => {
-            router.replace("/(docs)/privacy");
+            router.replace("/(tabs)/create");
           }}
           title="Browse Companies"
           subtitle="Let's make your next great hire happen."

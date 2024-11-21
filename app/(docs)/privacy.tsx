@@ -8,11 +8,13 @@ import {
 } from "react-native";
 import React from "react";
 import { images } from "@/constants";
+import CustomButton from "@/components/CustomButton";
+import { router } from "expo-router";
 
 const privacy = () => {
   return (
-    <ScrollView className="flex-1 bg-white">
-      <View className="flex-1 bg-white">
+    <View className="flex-1 bg-white">
+      <ScrollView className="flex-1 bg-white">
         <View className="relative w-full h-[250px]">
           <Image
             source={images.signUpCar}
@@ -143,7 +145,7 @@ const privacy = () => {
             or entities:
           </Text>
         </View>
-        <View className="p-7">
+        <View className="p-7  mb-[10%]">
           <Text className="font-JakartaBold text-xl pb-2">
             4. For Publishers and Advertisers
           </Text>
@@ -163,8 +165,18 @@ const privacy = () => {
             or entities:
           </Text>
         </View>
+      </ScrollView>
+      <View className="absolute bottom-0 w-full mb-4 p-4">
+        <CustomButton title="Download" />
+        <CustomButton
+          title="Close"
+          className="bg-[#2e2e2e] mt-4"
+          onPress={() => {
+            router.replace("/(tabs)/create");
+          }}
+        />
       </View>
-    </ScrollView>
+    </View>
   );
 };
 

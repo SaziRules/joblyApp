@@ -88,7 +88,7 @@ const JobSpec = () => {
       <View className="absolute bottom-0 w-full mb-4 p-4">
         <CustomButton title="Apply Now" onPress={handleApplyNow} />
         <CustomButton
-          title="Canced"
+          title="Cancel"
           className="bg-[#2e2e2e] mt-4"
           onPress={() => {
             router.replace("/(tabs)/home");
