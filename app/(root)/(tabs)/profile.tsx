@@ -1,9 +1,13 @@
 import ProfileHeader from "@/components/ProfileHeader";
-import { icons } from "@/constants";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import React, { useState, useEffect } from "react";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useUser } from "@clerk/clerk-expo";
+import { db } from "@/firebaseConfig";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 const Profile = () => {
+  const { user } = useUser();
   return (
     <ScrollView>
       <SafeAreaView>
@@ -82,7 +86,7 @@ const Profile = () => {
                 </View>
                 <View className=" flex flex-row items-center space-x-3 justify-between">
                   <Text className="text-[11px] text-[#9b9a9a] ">
-                    msolvaik@jobly.co.za
+                    {user?.emailAddresses[0].emailAddress}
                   </Text>
                 </View>
               </View>

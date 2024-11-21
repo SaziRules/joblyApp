@@ -1,8 +1,11 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { images } from "@/constants";
+import { useUser } from "@clerk/clerk-expo";
+import { router } from "expo-router";
 
 const ProfileHeader = () => {
+  const { user } = useUser();
   return (
     <View className="flex items-center justify-center">
       <Image
@@ -14,11 +17,15 @@ const ProfileHeader = () => {
           Martha Solvaik
         </Text>
         <Text className="font-Jakarta text-[#9b9a9a] text-[13px]">
-          msolvaik@jobly.co.za
+          {user?.emailAddresses[0].emailAddress}
         </Text>
       </View>
       <View className="bg-[#FEC300] px-2 py-1 mt-5 rounded-full">
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            router.replace("/(docs)/profiledata");
+          }}
+        >
           <Text className="text-[12px] text-[#1e1e1e]">Edit Profile</Text>
         </TouchableOpacity>
       </View>

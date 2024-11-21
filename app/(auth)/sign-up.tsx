@@ -1,14 +1,14 @@
 import { icons, images } from "@/constants";
 import { Alert, Image, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import InputField from "@/components/InputField";
 import { useState } from "react";
 import CustomButton from "@/components/CustomButton";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import OAuth from "@/components/OAuth";
 import { useSignUp } from "@clerk/clerk-expo";
 import { ReactNativeModal } from "react-native-modal";
-import { router } from "expo-router";
+import { db } from "@/firebaseConfig"; // Ensure Firebase is configured properly
+import { collection, addDoc } from "firebase/firestore";
 
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -44,8 +44,6 @@ const SignUp = () => {
         state: "pending",
       });
     } catch (err: any) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
       Alert.alert("Error", err.errors[0].longMessage);
     }
   };
@@ -59,8 +57,15 @@ const SignUp = () => {
       });
 
       if (completeSignUp.status === "complete") {
-        // TODO: Create a database user
         await setActive({ session: completeSignUp.createdSessionId });
+
+        // Save user to Firestore
+        await addDoc(collection(db, "users"), {
+          name: form.name,
+          email: form.email,
+          createdAt: new Date(),
+        });
+
         setVerification({
           ...verification,
           state: "success",

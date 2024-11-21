@@ -53,6 +53,37 @@ declare interface Ride {
     };
 }
 
+declare interface User {
+    user_id: number;
+    first_name: string;
+    last_name: string;
+    profile_image_url: string;
+    contact_number: number;
+    email: string;
+    gender: string;
+    location: string;
+    birth_date: string;
+    alt_number: string;
+}
+
+declare interface Resume {
+    id: Key | null | undefined;
+    name: string;
+    gender: string;
+    birthday: string;
+    location: string;
+    email: string;
+    phone: string;
+    summary: string;
+    education: string;
+    workHistory: string;
+    references: string;
+    skill: string;
+    certification: string;
+    language: string;
+    linkedin: string;
+}
+
 declare interface Job {
     id: Key | null | undefined;
     Company: string;

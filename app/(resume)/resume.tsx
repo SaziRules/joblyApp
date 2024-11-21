@@ -36,6 +36,7 @@ const Resume = () => {
     skill: "",
     certification: "",
     language: "",
+    linkedin: "",
   });
 
   const showDatePicker = () => {
@@ -271,8 +272,8 @@ const Resume = () => {
               <InputField
                 label="LinkedIn Profile"
                 placeholder="Enter your linkedin profile link"
-                value={form.language}
-                onChangeText={(value) => setForm({ ...form, language: value })}
+                value={form.linkedin}
+                onChangeText={(value) => setForm({ ...form, linkedin: value })}
               />
 
               <CustomButton

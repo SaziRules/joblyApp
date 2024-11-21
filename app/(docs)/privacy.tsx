@@ -1,4 +1,11 @@
-import { View, Text, ScrollView, Image } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  Button,
+  TouchableOpacity,
+} from "react-native";
 import React from "react";
 import { images } from "@/constants";
 
@@ -11,7 +18,7 @@ const privacy = () => {
             source={images.signUpCar}
             style={{ zIndex: 0, width: "100%", height: 250 }}
           />
-          <Text className="text-2xl text-black font-JakartaSemiBold absolute bottom-5 left-7">
+          <Text className="text-3xl text-black font-JakartaSemiBold absolute bottom-5 left-7">
             Privacy Policy
           </Text>
         </View>
@@ -29,7 +36,7 @@ const privacy = () => {
           </Text>
         </View>
         <View className="p-7">
-          <Text className="font-JakartaBold text-2xl">
+          <Text className="font-JakartaBold text-xl">
             Jobly Privacy and Cookie Policy
           </Text>
           <Text className="font-Jakarta text-base">

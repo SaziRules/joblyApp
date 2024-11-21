@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import { icons, images } from "@/constants";
+import { router } from "expo-router";
 
 const useFirestoreData = (vacancies: string) => {
   const [data, setData] = useState<Job[] | null>(null);
@@ -98,7 +99,12 @@ const JobCard = () => {
         <Text className="font-JakartaSemiBold text-[11px] text-[#FEC300]">
           {item.Salary} / Month
         </Text>
-        <TouchableOpacity className="bg-[#FEC300] rounded-full w-[100px] py-2 px-2 flex items-center mt-5 mb-2">
+        <TouchableOpacity
+          className="bg-[#FEC300] rounded-full w-[100px] py-2 px-2 flex items-center mt-5 mb-2"
+          onPress={() => {
+            router.replace("/(docs)/jobspec");
+          }}
+        >
           <Text className="text-[12px] font-JakartaBold text-[#1e1e1e]">
             Easily Apply
           </Text>
