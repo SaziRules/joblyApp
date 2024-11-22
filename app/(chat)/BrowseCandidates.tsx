@@ -128,10 +128,6 @@ const BrowseCandidates: React.FC = () => {
             <Icon name="arrow-back" size={24} color="#000" />
           </TouchableOpacity>
           <View className="absolute bottom-5 left-7 flex-row items-center space-x-2">
-            <Image
-              source={images.airbnb} // Adjust the image source accordingly
-              className="h-[50px] w-[50px] rounded-full"
-            />
             <Text className="text-2xl text-black font-JakartaSemiBold">
               Browse Candidates
             </Text>
