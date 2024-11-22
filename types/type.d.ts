@@ -16,6 +16,7 @@ declare interface MarkerData {
     id: number;
     title: string;
     profile_image_url: string;
+
     car_image_url: string;
     car_seats: number;
     rating: number;
@@ -54,7 +55,7 @@ declare interface Ride {
 }
 
 declare interface User {
-    user_id: number;
+    user_id: Key | null | undefined;
     first_name: string;
     last_name: string;
     profile_image_url: string;
@@ -67,6 +68,9 @@ declare interface User {
 }
 
 declare interface Resume {
+    profession: string;
+    work_description: string;
+    qualification_samary: string;
     id: Key | null | undefined;
     name: string;
     gender: string;
@@ -82,6 +86,39 @@ declare interface Resume {
     certification: string;
     language: string;
     linkedin: string;
+    description: string;
+    lastUpdated: string;
+}
+
+export interface Message {
+    id: string;
+    text: string;
+    senderId: string;
+    timestamp: { seconds: number; nanoseconds: number }; // Firestore timestamp structure
+  }
+
+  export interface chatsData {
+    id: string;
+    name: string;
+    imageUrl: string;
+    lastMessage: string;
+    lastMessageTimestamp: {
+      seconds: number;
+      nanoseconds: number;
+    };
+  }
+  
+  
+
+interface UserCardProps {
+  user: {
+    id: string;
+    name: string;
+    profession: string;
+    qualification: string;
+    profileImageUrl?: string;
+  };
+  onPress: () => void;
 }
 
 declare interface Job {

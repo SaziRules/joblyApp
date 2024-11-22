@@ -26,6 +26,9 @@ const Resume = () => {
     certification: "",
     language: "",
     linkedin: "",
+    profession: "",
+    work_description: "",
+    qualification_samary: "",
   });
 
   const showDatePicker = () => setDatePickerVisibility(true);
@@ -106,6 +109,13 @@ const Resume = () => {
               title="Next"
               className="mt-6"
               onPress={() => setStep(2)}
+            />
+            <CustomButton
+              title="Cancel"
+              className="mt-6 bg-[#2e2e2e]"
+              onPress={() => {
+                router.replace("/(tabs)/create");
+              }}
             />
           </>
         )}
@@ -189,6 +199,42 @@ const Resume = () => {
         {step === 4 && (
           <>
             <InputField
+              label="Previous Work History"
+              placeholder="Describe the normal day at your previous work"
+              value={form.work_description}
+              onChangeText={(value) =>
+                handleInputChange("work_description", value)
+              }
+              multiline
+              className="rounded-lg h-[130px] bg-neutral-100"
+            />
+            <InputField
+              label="Qualification Summary"
+              placeholder="Write a brief course outline or education journey"
+              value={form.qualification_samary}
+              onChangeText={(value) =>
+                handleInputChange("qualification_samary", value)
+              }
+              multiline
+              className="rounded-lg h-[130px] bg-neutral-100"
+            />
+
+            <CustomButton
+              title="Next"
+              className="mt-6"
+              onPress={() => setStep(5)}
+            />
+            <CustomButton
+              title="Previous"
+              className="mt-6 bg-[#2e2e2e]"
+              onPress={() => setStep(2)}
+            />
+          </>
+        )}
+
+        {step === 5 && (
+          <>
+            <InputField
               label="References"
               placeholder="Enter your references"
               value={form.references}
@@ -205,6 +251,12 @@ const Resume = () => {
               placeholder="Enter your LinkedIn profile link"
               value={form.linkedin}
               onChangeText={(value) => handleInputChange("linkedin", value)}
+            />
+            <InputField
+              label="Your Profession"
+              placeholder="Enter your profession name"
+              value={form.profession}
+              onChangeText={(value) => handleInputChange("profession", value)}
             />
             <CustomButton
               title="Create Resume"

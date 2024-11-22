@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "@clerk/clerk-expo";
 import { db } from "@/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
+import { router } from "expo-router";
 
 const Profile = () => {
   const { user } = useUser();
@@ -13,6 +14,7 @@ const Profile = () => {
     email: "",
     contact_number: "",
     gender: "",
+    location: "",
   });
 
   useEffect(() => {
@@ -28,6 +30,7 @@ const Profile = () => {
             email: data.email,
             contact_number: data.contact_number,
             gender: data.gender,
+            location: data.location,
           });
         } else {
           console.log("No such document!");
@@ -51,7 +54,12 @@ const Profile = () => {
             </Text>
           </View>
           <View>
-            <TouchableOpacity className="flex p-3 bg-white rounded-lg mx-5 mt-5">
+            <TouchableOpacity
+              className="flex p-3 bg-white rounded-lg mx-5 mt-5"
+              onPress={() => {
+                router.replace("/(docs)/resumedoc");
+              }}
+            >
               <View className="flex flex-row items-center justify-between">
                 <View>
                   <Text className="text-[16px] font-semibold text-[#1e1e1e]">
@@ -62,19 +70,18 @@ const Profile = () => {
                   </Text>
                 </View>
                 <View>
-                  <Text className="text-[12px]">Edit</Text>
+                  <Text className="text-[12px]">View / Download</Text>
                 </View>
               </View>
             </TouchableOpacity>
-
-            <TouchableOpacity className="flex p-3 bg-white rounded-lg mx-5 mt-3">
+            <TouchableOpacity className="flex p-3 bg-white rounded-lg mx-5 mt-5">
               <View className="flex flex-row items-center justify-between">
                 <View>
                   <Text className="text-[16px] font-semibold text-[#1e1e1e]">
-                    .Net Developer
+                    Front-End Developer
                   </Text>
                   <Text className="text-[11px] text-[#9b9a9a]">
-                    Last updated 14.02.2024
+                    Add, remove, or update your information
                   </Text>
                 </View>
                 <View>
@@ -147,6 +154,21 @@ const Profile = () => {
                 <View className="flex flex-row items-center space-x-3 justify-between">
                   <Text className="text-[11px] text-[#9b9a9a]">
                     {profileData.gender}
+                  </Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity className="flex p-3 bg-white rounded-lg mx-5 mt-3">
+              <View className="flex flex-row items-center justify-between">
+                <View>
+                  <Text className="text-[16px] font-semibold text-[#1e1e1e]">
+                    Location
+                  </Text>
+                </View>
+                <View className="flex flex-row items-center space-x-3 justify-between">
+                  <Text className="text-[11px] text-[#9b9a9a]">
+                    {profileData.location}
                   </Text>
                 </View>
               </View>

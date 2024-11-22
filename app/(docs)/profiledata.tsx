@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Alert, Image, ScrollView, Text, View } from "react-native";
+import { Alert, Image, ScrollView, Text, View, TextInput } from "react-native";
 import InputField from "@/components/InputField";
 import { icons, images } from "@/constants";
 import { router } from "expo-router";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { db } from "@/firebaseConfig";
-import { doc, updateDoc } from "firebase/firestore"; // Updated import
+import { doc, updateDoc } from "firebase/firestore";
 import CustomButton from "@/components/CustomButton";
 import { useUser } from "@clerk/clerk-expo"; // Hook to get logged-in user
 
@@ -19,7 +19,9 @@ const ProfileData = () => {
     gender: "",
     location: "",
     birth_date: "",
-    alt_number: "",
+    profileImageUrl: "", // Add field for image URL
+    profession: "",
+    qualification: "",
   });
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
@@ -164,10 +166,41 @@ const ProfileData = () => {
                 }
               />
               <InputField
-                label="Alternative Number"
-                placeholder="Enter an alternative number"
-                value={form.alt_number}
-                onChangeText={(value) => handleInputChange("alt_number", value)}
+                label="Profile Image URL"
+                placeholder="Enter the URL of your profile image"
+                value={form.profileImageUrl}
+                onChangeText={(value) =>
+                  handleInputChange("profileImageUrl", value)
+                }
+              />
+
+              <CustomButton
+                title="Next"
+                className="mt-6"
+                onPress={() => setStep(step + 1)}
+              />
+              <CustomButton
+                title="Go Back"
+                className="mt-6 bg-[#2e2e2e]"
+                onPress={() => setStep(step - 1)}
+              />
+            </>
+          )}
+          {step === 3 && (
+            <>
+              <InputField
+                label="Your Profession"
+                placeholder="Tell us what you're about"
+                value={form.profession}
+                onChangeText={(value) => handleInputChange("profession", value)}
+              />
+              <InputField
+                label="Your Qualification"
+                placeholder="Enter your educational qualification"
+                value={form.qualification}
+                onChangeText={(value) =>
+                  handleInputChange("qualification", value)
+                }
               />
 
               <CustomButton

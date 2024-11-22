@@ -48,6 +48,7 @@ export default function RootLayout() {
           <Stack.Screen name="(root)" options={{ headerShown: false }} />
           <Stack.Screen name="(resume)" options={{ headerShown: false }} />
           <Stack.Screen name="(docs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(chat)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
       </ClerkLoaded>

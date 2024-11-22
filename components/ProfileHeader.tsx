@@ -1,6 +1,5 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
-import { images } from "@/constants";
 import { useUser } from "@clerk/clerk-expo";
 import { router } from "expo-router";
 import { db } from "@/firebaseConfig";
@@ -11,6 +10,7 @@ const ProfileHeader = () => {
   const [profileData, setProfileData] = useState({
     full_name: "",
     email: "",
+    profileImageUrl: "",
   });
 
   useEffect(() => {
@@ -21,9 +21,11 @@ const ProfileHeader = () => {
 
         if (docSnap.exists()) {
           const data = docSnap.data();
+          console.log("Fetched Profile Data:", data); // Debugging log
           setProfileData({
             full_name: `${data.first_name} ${data.last_name}`,
             email: data.email,
+            profileImageUrl: data.profileImageUrl, // Ensure this matches the field in Firestore
           });
         } else {
           console.log("No such document!");
@@ -37,7 +39,9 @@ const ProfileHeader = () => {
   return (
     <View className="flex items-center justify-center">
       <Image
-        source={images.user}
+        source={{
+          uri: profileData.profileImageUrl || "https://via.placeholder.com/150",
+        }}
         className="h-[112px] w-[112px] rounded-full"
       />
       <View className="flex pt-1 items-center justify-center">
@@ -45,7 +49,7 @@ const ProfileHeader = () => {
           {profileData.full_name}
         </Text>
         <Text className="font-Jakarta text-[#9b9a9a] text-[13px]">
-          {user?.emailAddresses[0].emailAddress}
+          {profileData.email}
         </Text>
       </View>
       <View className="bg-[#FEC300] px-2 py-1 mt-5 rounded-full">

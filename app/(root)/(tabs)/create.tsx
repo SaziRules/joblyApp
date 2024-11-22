@@ -98,7 +98,7 @@ const Create = () => {
 
         <QuickAction
           onPress={() => {
-            router.replace("/(tabs)/create");
+            router.replace("/(chat)/BrowseCandidates");
           }}
           title="Browse Candidates"
           subtitle="Find the best candidate for your next hire."

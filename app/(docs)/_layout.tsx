@@ -7,6 +7,7 @@ const Layout = () => {
       <Stack.Screen name="terms" options={{ headerShown: false }} />
       <Stack.Screen name="profiledata" options={{ headerShown: false }} />
       <Stack.Screen name="jobspec" options={{ headerShown: false }} />
+      <Stack.Screen name="resumedoc" options={{ headerShown: false }} />
     </Stack>
   );
 };
