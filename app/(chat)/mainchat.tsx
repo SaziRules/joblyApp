@@ -107,7 +107,7 @@ const MainChat = () => {
             />
           ))}
         </View>
-        <View className="flex-row items-center mx-2 mb-3 rounded-full shadow-md bg-white p-2">
+        <View className="flex-row items-center mx-5 mb-11 rounded-full shadow-md bg-white p-2">
           <TextInput
             placeholder="Type your message..."
             value={newMessage}
