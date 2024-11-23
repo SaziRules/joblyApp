@@ -1,13 +1,13 @@
-import ProfileHeader from "@/components/ProfileHeader";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "@clerk/clerk-expo";
 import { db } from "@/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import { router } from "expo-router";
+import ProfileHeader from "@/components/ProfileHeader";
 
-const Profile = () => {
+const Profile: React.FC = () => {
   const { user } = useUser();
   const [profileData, setProfileData] = useState({
     full_name: "",
@@ -15,6 +15,8 @@ const Profile = () => {
     contact_number: "",
     gender: "",
     location: "",
+    qualification: "",
+    profession: "",
   });
 
   useEffect(() => {
@@ -31,6 +33,8 @@ const Profile = () => {
             contact_number: data.contact_number,
             gender: data.gender,
             location: data.location,
+            qualification: data.qualification,
+            profession: data.profession,
           });
         } else {
           console.log("No such document!");
@@ -40,6 +44,8 @@ const Profile = () => {
 
     fetchProfileData();
   }, [user?.id]);
+
+  const userId = user?.id;
 
   return (
     <ScrollView>
@@ -57,13 +63,18 @@ const Profile = () => {
             <TouchableOpacity
               className="flex p-3 bg-white rounded-lg mx-5 mt-5"
               onPress={() => {
-                router.replace("/(docs)/resumedoc");
+                router.push({
+                  pathname: "/(docs)/resumedoc",
+                  params: {
+                    userId: userId,
+                  },
+                });
               }}
             >
               <View className="flex flex-row items-center justify-between">
                 <View>
                   <Text className="text-[16px] font-semibold text-[#1e1e1e]">
-                    Front-End Developer
+                    {profileData.profession}
                   </Text>
                   <Text className="text-[11px] text-[#9b9a9a]">
                     Last updated 18.11.2023
@@ -71,21 +82,6 @@ const Profile = () => {
                 </View>
                 <View>
                   <Text className="text-[12px]">View / Download</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity className="flex p-3 bg-white rounded-lg mx-5 mt-5">
-              <View className="flex flex-row items-center justify-between">
-                <View>
-                  <Text className="text-[16px] font-semibold text-[#1e1e1e]">
-                    Front-End Developer
-                  </Text>
-                  <Text className="text-[11px] text-[#9b9a9a]">
-                    Add, remove, or update your information
-                  </Text>
-                </View>
-                <View>
-                  <Text className="text-[12px]">Edit</Text>
                 </View>
               </View>
             </TouchableOpacity>

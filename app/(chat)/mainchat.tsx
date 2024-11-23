@@ -92,7 +92,7 @@ const MainChat = () => {
             </Text>
           </View>
         </View>
-        <View className="flex-1 p-2">
+        <View className="flex-1 mr-1 p-2">
           {messages.map((message) => (
             <ChatMessage
               key={message.id}

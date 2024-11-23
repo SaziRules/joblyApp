@@ -137,7 +137,7 @@ const ProfileData = () => {
                 title="Cancel"
                 className="mt-6 bg-[#2e2e2e]"
                 onPress={() => {
-                  router.replace("/(tabs)/create");
+                  router.replace("/(tabs)/profile");
                 }}
               />
             </>

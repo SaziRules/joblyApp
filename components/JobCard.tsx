@@ -1,5 +1,12 @@
 import { Job } from "@/types/type";
-import { View, Text, Image, TouchableOpacity, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
@@ -47,7 +54,11 @@ const JobCard = () => {
   const { data, loading, error } = useFirestoreData("vacancies");
 
   if (loading) {
-    return <Text className="text-center">Loading...</Text>;
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color="#FEC300" />
+      </View>
+    );
   }
 
   if (error) {

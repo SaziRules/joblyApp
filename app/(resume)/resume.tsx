@@ -5,12 +5,14 @@ import { images } from "@/constants";
 import { router } from "expo-router";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { db } from "@/firebaseConfig";
-import { collection, addDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import CustomButton from "@/components/CustomButton";
+import { useUser } from "@clerk/clerk-expo"; // Import useUser to get the logged-in user's information
 
 const Resume = () => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [step, setStep] = useState(1);
+  const { user } = useUser(); // Get the logged-in user's information
   const [form, setForm] = useState({
     name: "",
     gender: "",
@@ -56,9 +58,15 @@ const Resume = () => {
     }
 
     try {
-      await addDoc(collection(db, "resumes"), form);
-      Alert.alert("Success", "Resume submitted successfully!");
-      router.replace("/(tabs)/create");
+      if (user && user.id) {
+        // Ensure the user ID is available
+        // Set the document ID to be the same as the user's ID
+        await setDoc(doc(db, "resumes", user.id), form);
+        Alert.alert("Success", "Resume created successfully!");
+        router.replace("/(tabs)/profile");
+      } else {
+        Alert.alert("Error", "User is not logged in.");
+      }
     } catch (error) {
       Alert.alert("Error", "Failed to submit resume. Please try again.");
     }
@@ -227,7 +235,7 @@ const Resume = () => {
             <CustomButton
               title="Previous"
               className="mt-6 bg-[#2e2e2e]"
-              onPress={() => setStep(2)}
+              onPress={() => setStep(3)}
             />
           </>
         )}
@@ -266,7 +274,7 @@ const Resume = () => {
             <CustomButton
               title="Previous"
               className="mt-6 bg-[#2e2e2e]"
-              onPress={() => setStep(3)}
+              onPress={() => setStep(4)}
             />
           </>
         )}

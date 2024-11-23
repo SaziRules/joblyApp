@@ -1,12 +1,28 @@
-import { View, Text, ScrollView, Image, Alert } from "react-native";
 import React from "react";
+import { View, Text, ScrollView, Image, Alert } from "react-native";
 import { images } from "@/constants";
 import CustomButton from "@/components/CustomButton";
 import { useLocalSearchParams, router } from "expo-router";
 
-const JobSpec = () => {
+interface JobData {
+  Company: string;
+  Position: string;
+  Salary: string;
+  Description: string;
+  Duties: string;
+  Benefits: string;
+  Education: string;
+  Experience: string;
+  Skills: string;
+  Location: string;
+  Type: string;
+  Setting: string;
+  Deadline: string;
+}
+
+const JobSpec: React.FC = () => {
   const { job } = useLocalSearchParams();
-  const jobData = JSON.parse(job as string);
+  const jobData: JobData = JSON.parse(job as string);
 
   const handleApplyNow = () => {
     Alert.alert(
@@ -29,14 +45,12 @@ const JobSpec = () => {
               {jobData.Company}
             </Text>
           </View>
-
           <View className="p-7">
             <Text className="font-JakartaBold text-xl">{jobData.Position}</Text>
             <Text className="font-Jakarta text-base">
               Renumeration: {jobData.Salary}
             </Text>
           </View>
-
           <View className="p-7">
             <Text className="font-JakartaBold text-xl pb-2">
               Job Description

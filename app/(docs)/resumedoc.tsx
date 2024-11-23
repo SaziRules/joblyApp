@@ -1,17 +1,82 @@
-import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  Button,
-  TouchableOpacity,
-} from "react-native";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { View, Text, ScrollView, Image, ActivityIndicator } from "react-native";
 import { images } from "@/constants";
 import CustomButton from "@/components/CustomButton";
-import { router } from "expo-router";
+import { useLocalSearchParams, router } from "expo-router";
+import { db } from "@/firebaseConfig";
+import { doc, getDoc } from "firebase/firestore";
 
-const ResumeDoc = () => {
+interface ResumeData {
+  name: string;
+  profession: string;
+  summary: string;
+  education: string;
+  workHistory: string;
+  certification: string;
+  skill: string;
+  work_description: string;
+  qualification_samary: string;
+  language: string;
+  birthday: string;
+  gender: string;
+  location: string;
+  email: string;
+  phone: string;
+  linkedin: string;
+  references: string;
+}
+
+const ResumeDoc: React.FC = () => {
+  const { userId } = useLocalSearchParams();
+  const [resumeData, setResumeData] = useState<ResumeData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    console.log("UserID:", userId); // Log userId for debugging
+    if (!userId) {
+      console.error("No userId provided.");
+      setLoading(false);
+      return;
+    }
+
+    const fetchResumeData = async () => {
+      try {
+        const docRef = doc(db, "resumes", userId as string); // Ensure userId is a string
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data() as ResumeData;
+          console.log("Resume Data:", data); // Log resume data for debugging
+          setResumeData(data);
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error("Error fetching resume data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResumeData();
+  }, [userId]);
+
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color="#FEC300" />
+      </View>
+    );
+  }
+
+  if (!resumeData) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text>No resume data found</Text>
+      </View>
+    );
+  }
+
   return (
     <View className="flex-1 bg-white">
       <ScrollView className="flex-1 bg-white">
@@ -21,115 +86,89 @@ const ResumeDoc = () => {
             style={{ zIndex: 0, width: "100%", height: 250 }}
           />
           <Text className="text-3xl text-black font-JakartaSemiBold absolute bottom-6 left-7">
-            Sazi Sokanyile
+            {resumeData.name}
           </Text>
           <Text className="font-JakartaMedium absolute text-base left-8 bottom-1">
-            Fullstack Developer
+            {resumeData.profession}
           </Text>
         </View>
         <View className="p-7">
           <Text className="font-JakartaBold pb-2 text-xl">About me</Text>
+          <Text className="font-Jakarta text-base">{resumeData.summary}</Text>
+        </View>
+
+        <View className="p-7 mb-[-7%]">
+          <Text className="font-JakartaBold text-xl">
+            Certifications & Accreditations
+          </Text>
           <Text className="font-Jakarta text-base">
-            Below you will find Jobly’s information about our cookie and privacy
-            policies. We know we are giving a great deal of information. Jobly
-            does this for a reason: we want you to have as much knowledge about
-            what we do for you at Jobly as is possible. We do not want you to
-            wonder about any of our processes or procedures or guess as to what
-            your interaction with Jobly means. We want you to understand it,
-            which is why we must explain it in detail. We urge you to read these
-            terms or any section of interest to you. You are agreeing to proceed
-            under them.
+            {resumeData.certification}
+          </Text>
+        </View>
+        <View className="p-7">
+          <Text className="font-JakartaBold text-xl">Applicable Skills</Text>
+          <Text className="font-Jakarta text-base">{resumeData.skill}</Text>
+        </View>
+        <View className="p-7 mb-[-7%]">
+          <Text className="font-JakartaBold text-xl">Work History</Text>
+          <Text className="font-Jakarta text-base">
+            {resumeData.workHistory}
+          </Text>
+        </View>
+        <View className="p-7">
+          <Text className="font-JakartaBold text-xl pb-2">
+            Work Description
+          </Text>
+          <Text className="font-Jakarta text-base">
+            {resumeData.work_description}
           </Text>
         </View>
         <View className="p-7 mb-[-7%]">
           <Text className="font-JakartaBold text-xl">
             Educational Background
           </Text>
-          <Text className="font-Jakarta text-base">
-            Last Updated: November 16, 2024
-          </Text>
-        </View>
-        <View className="p-7 mb-[-7%]">
-          <Text className="font-JakartaBold text-xl">Work History</Text>
-          <Text className="font-Jakarta text-base">
-            Last Updated: November 16, 2024
-          </Text>
-        </View>
-        <View className="p-7 mb-[-7%]">
-          <Text className="font-JakartaBold text-xl">
-            Certifications & Accreditations
-          </Text>
-          <Text className="font-Jakarta text-base">
-            Last Updated: November 16, 2024
-          </Text>
-        </View>
-        <View className="p-7">
-          <Text className="font-JakartaBold text-xl">Applicable Skills</Text>
-          <Text className="font-Jakarta text-base">
-            Last Updated: November 16, 2024
-          </Text>
-        </View>
-        <View className="p-7">
-          <Text className="font-JakartaBold text-xl pb-2">
-            Previous Work Description
-          </Text>
-          <Text className="font-Jakarta text-base">
-            Each time you access or use Jobly’s online and/or mobile services
-            and websites, including any Jobly mobile application and browser
-            extension or plugin, regardless of where it is downloaded from
-            (collectively, the “Jobly Apps”), and any software, service,
-            feature, product.
-          </Text>
+          <Text className="font-Jakarta text-base">{resumeData.education}</Text>
         </View>
         <View className="p-7">
           <Text className="font-JakartaBold text-xl pb-2">
             Qualification Summary
           </Text>
           <Text className="font-Jakarta text-base">
-            Each time you access or use Jobly’s online and/or mobile services
-            and websites, including any Jobly mobile application and browser
-            extension or plugin, regardless of where it is downloaded from
-            (collectively, the “Jobly Apps”), and any software, service,
-            feature, product.
+            {resumeData.qualification_samary}
           </Text>
         </View>
         <View className="p-7 mb-[-7%]">
           <Text className="font-JakartaBold text-xl">Languages</Text>
-          <Text className="font-Jakarta text-base">
-            English, Spanish, Arabic
-          </Text>
+          <Text className="font-Jakarta text-base">{resumeData.language}</Text>
         </View>
         <View className="p-7 mb-[-7%]">
           <Text className="font-JakartaBold text-xl">Date of Birth</Text>
-          <Text className="font-Jakarta text-base">01 December 1990</Text>
+          <Text className="font-Jakarta text-base">{resumeData.birthday}</Text>
         </View>
-        <View className="p-7 ">
+        <View className="p-7">
           <Text className="font-JakartaBold text-xl">Gender</Text>
-          <Text className="font-Jakarta text-base">Male</Text>
+          <Text className="font-Jakarta text-base">{resumeData.gender}</Text>
         </View>
-
         <View className="p-7 mb-[-7%]">
           <Text className="font-JakartaBold text-xl">Contact Details</Text>
           <Text className="font-Jakarta text-base">
-            Location: Durban South Africa
+            Location: {resumeData.location}
           </Text>
-          <Text className="font-Jakarta  text-base">
-            Email: sazi@thepitchdot.co.za
+          <Text className="font-Jakarta text-base">
+            Email: {resumeData.email}
           </Text>
-          <Text className="font-Jakarta  text-base">
-            Contact Number: 0312344321
+          <Text className="font-Jakarta text-base">
+            Contact Number: {resumeData.phone}
           </Text>
         </View>
         <View className="p-7 mb-[-7%]">
           <Text className="font-JakartaBold text-xl">Socials</Text>
-          <Text className="font-Jakarta text-base">
-            Linkedin: http//:www.linkedin.com/sazi
-          </Text>
+          <Text className="font-Jakarta text-base">{resumeData.linkedin}</Text>
         </View>
-        <View className="p-7 mb-[80%]">
+        <View className="p-7 mb-[50%]">
           <Text className="font-JakartaBold text-xl">References</Text>
           <Text className="font-Jakarta text-base">
-            Shaheen Moosa - 0789876890
+            {resumeData.references}
           </Text>
         </View>
       </ScrollView>

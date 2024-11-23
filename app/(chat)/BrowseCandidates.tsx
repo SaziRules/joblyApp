@@ -121,7 +121,7 @@ const BrowseCandidates: React.FC = () => {
           />
           <TouchableOpacity
             onPress={() => {
-              router.replace("/(tabs)/chat");
+              router.replace("/(tabs)/create");
             }}
             className="absolute top-10 left-5 bg-white p-2 rounded-full shadow-md"
           >

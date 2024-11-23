@@ -35,6 +35,7 @@ import heart from "@/assets/icons/heart.png"
 import airbnb from "@/assets/images/airbnb.png"
 import gear from "@/assets/icons/gear.png"
 import user from "@/assets/images/user.jpeg"
+import placeholder from "@/assets/images/airbnb.png"; // Make sure to add this image to your assets
 
 export const images = {
     onboarding1,
@@ -47,6 +48,7 @@ export const images = {
     message,
     airbnb,
     user,
+    placeholder,
 };
 
 export const icons = {
