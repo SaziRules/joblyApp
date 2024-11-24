@@ -12,7 +12,7 @@ const OAuth = () => {
         <View className="flex-1 h-[1px] bg-general-100" />
       </View>
       <CustomButton
-        title="Sign Up As An Employer"
+        title="Sign in with Google"
         className="mt-5 w-full shadow-none bg-[#2e2e2e]"
         IconLeft={() => (
           <Image

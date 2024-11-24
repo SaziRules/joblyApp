@@ -10,7 +10,7 @@ import { ReactNativeModal } from "react-native-modal";
 import { db } from "@/firebaseConfig"; // Ensure Firebase is configured properly
 import { collection, doc, setDoc } from "firebase/firestore"; // Updated import
 
-const SignUp = () => {
+const SignUpCo = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
@@ -66,7 +66,7 @@ const SignUp = () => {
           await setDoc(doc(db, "users", userId), {
             name: form.name,
             email: form.email,
-            role: "Job-Seeker", // Add role field
+            role: "Employer", // Add role field
             createdAt: new Date(),
           });
         }
@@ -97,13 +97,13 @@ const SignUp = () => {
         <View className="relative w-full h-[250px]">
           <Image source={images.signUpCar} className="z-0 w-full h-[250px]" />
           <Text className="text-2xl text-black font-JakartaSemiBold absolute bottom-5 left-5">
-            Find your dream job
+            Find your best hire
           </Text>
         </View>
         <View className="p-5">
           <InputField
-            label="Name"
-            placeholder="Enter your name"
+            label="Company Name"
+            placeholder="Enter your company name"
             icon={icons.person}
             value={form.name}
             onChangeText={(value) => setForm({ ...form, name: value })}
@@ -202,4 +202,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default SignUpCo;

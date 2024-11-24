@@ -9,8 +9,10 @@ const ProfileHeader = () => {
   const { user } = useUser();
   const [profileData, setProfileData] = useState({
     full_name: "",
+    company_name: "",
     email: "",
     profileImageUrl: "",
+    role: "", // Add role to the state
   });
 
   useEffect(() => {
@@ -26,6 +28,8 @@ const ProfileHeader = () => {
             full_name: `${data.first_name} ${data.last_name}`,
             email: data.email,
             profileImageUrl: data.profileImageUrl, // Ensure this matches the field in Firestore
+            role: data.role, // Add role to the state
+            company_name: data.company_name, // Add company_name to the state
           });
         } else {
           console.log("No such document!");
@@ -46,7 +50,9 @@ const ProfileHeader = () => {
       />
       <View className="flex pt-1 items-center justify-center">
         <Text className="font-JakartaBold text-[22px] text-[#1e1e1e]">
-          {profileData.full_name}
+          {profileData.role === "Employer"
+            ? profileData.company_name
+            : profileData.full_name}
         </Text>
         <Text className="font-Jakarta text-[#9b9a9a] text-[13px]">
           {profileData.email}
@@ -55,7 +61,11 @@ const ProfileHeader = () => {
       <View className="bg-[#FEC300] px-2 py-1 mt-5 rounded-full">
         <TouchableOpacity
           onPress={() => {
-            router.replace("/(docs)/profiledata");
+            if (profileData.role === "Employer") {
+              router.replace("/(docs)/company-info");
+            } else {
+              router.replace("/(docs)/profiledata");
+            }
           }}
         >
           <Text className="text-[12px] text-[#1e1e1e]">Edit Profile</Text>

@@ -11,12 +11,15 @@ const Profile: React.FC = () => {
   const { user } = useUser();
   const [profileData, setProfileData] = useState({
     full_name: "",
+    company_name: "",
+    industry: "",
     email: "",
     contact_number: "",
     gender: "",
     location: "",
     qualification: "",
     profession: "",
+    role: "", // Add role to the state
   });
 
   useEffect(() => {
@@ -35,6 +38,9 @@ const Profile: React.FC = () => {
             location: data.location,
             qualification: data.qualification,
             profession: data.profession,
+            role: data.role, // Add role to the state
+            company_name: data.company_name,
+            industry: data.industry, // Add industry to the state
           });
         } else {
           console.log("No such document!");
@@ -56,7 +62,9 @@ const Profile: React.FC = () => {
         <View>
           <View className="flex-row justify-between items-center px-5 mt-6">
             <Text className="font-JakartaBold text-[16px] text-[#1e1e1e]">
-              My Resume
+              {profileData.role === "Employer"
+                ? "Company Profile"
+                : "My Resume"}
             </Text>
           </View>
           <View>
@@ -64,7 +72,10 @@ const Profile: React.FC = () => {
               className="flex p-3 bg-white rounded-lg mx-5 mt-5"
               onPress={() => {
                 router.push({
-                  pathname: "/(docs)/resumedoc",
+                  pathname:
+                    profileData.role === "Employer"
+                      ? "/(docs)/company-info"
+                      : "/(docs)/resumedoc",
                   params: {
                     userId: userId,
                   },
@@ -74,7 +85,9 @@ const Profile: React.FC = () => {
               <View className="flex flex-row items-center justify-between">
                 <View>
                   <Text className="text-[16px] font-semibold text-[#1e1e1e]">
-                    {profileData.profession}
+                    {profileData.role === "Employer"
+                      ? profileData.industry
+                      : profileData.profession}
                   </Text>
                   <Text className="text-[11px] text-[#9b9a9a]">
                     Last updated 18.11.2023
@@ -91,7 +104,7 @@ const Profile: React.FC = () => {
         <View>
           <View className="flex-row justify-between items-center px-5 mt-6">
             <Text className="font-JakartaBold text-[16px] text-[#1e1e1e]">
-              My Details
+              {profileData.role === "Employer" ? "Our Details" : "My Details"}
             </Text>
           </View>
           <View>
@@ -99,12 +112,16 @@ const Profile: React.FC = () => {
               <View className="flex flex-row items-center justify-between">
                 <View>
                   <Text className="text-[16px] font-semibold text-[#1e1e1e]">
-                    Full Name
+                    {profileData.role === "Employer"
+                      ? "Company Name"
+                      : "Full Name"}
                   </Text>
                 </View>
                 <View className="flex flex-row items-center space-x-3 justify-between">
                   <Text className="text-[11px] text-[#9b9a9a]">
-                    {profileData.full_name}
+                    {profileData.role === "Employer"
+                      ? profileData.company_name
+                      : profileData.full_name}
                   </Text>
                 </View>
               </View>
@@ -144,12 +161,14 @@ const Profile: React.FC = () => {
               <View className="flex flex-row items-center justify-between">
                 <View>
                   <Text className="text-[16px] font-semibold text-[#1e1e1e]">
-                    Gender
+                    {profileData.role === "Employer" ? "Industry" : "Gender"}
                   </Text>
                 </View>
                 <View className="flex flex-row items-center space-x-3 justify-between">
                   <Text className="text-[11px] text-[#9b9a9a]">
-                    {profileData.gender}
+                    {profileData.role === "Employer"
+                      ? profileData.industry
+                      : profileData.gender}
                   </Text>
                 </View>
               </View>
