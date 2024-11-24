@@ -1,4 +1,26 @@
 import {TextInputProps, TouchableOpacityProps} from "react-native";
+// types/type.ts
+import firebase from 'firebase/app';
+
+export interface Job {
+  id: string;
+  Company: string;
+  Position: string;
+  Salary: string;
+  Type: string;
+  Location: string;
+  Setting: string;
+  description: string;
+  Description: string;
+  Deadline: string;
+  Education: string;
+  Experience: string;
+  Skills: string;
+  Duties: string;
+  Benefits: string;
+  createdAt: firebase.firestore.Timestamp; // Use Firestore Timestamp
+}
+
 
 declare interface Driver {
     driver_id: number;
@@ -108,6 +130,11 @@ export interface Message {
     };
   }
   
+  // types.ts
+export type RootStackParamList = {
+    InboxList: undefined;
+    MainChat: { chatId: string };
+  };
   
 
 interface UserCardProps {
@@ -137,6 +164,27 @@ declare interface Job {
     Duties: string;
     Benefits: string;
 }
+
+// types/type.ts
+export interface Job {
+    id: string;
+    Company: string;
+    Position: string;
+    Salary: string;
+    Type: string;
+    Location: string;
+    Setting: string;
+    description: string;
+    Description: string;
+    Deadline: string;
+    Education: string;
+    Experience: string;
+    Skills: string;
+    Duties: string;
+    Benefits: string;
+    createdAt: Date; // Add createdAt property
+  }
+  
 
 declare interface ButtonProps extends TouchableOpacityProps {
     title: string;

@@ -34,6 +34,13 @@ interface User {
   profileImageUrl?: string;
 }
 
+const truncate = (str: string, maxLength: number) => {
+  if (str.length > maxLength) {
+    return str.slice(0, maxLength) + "...";
+  }
+  return str;
+};
+
 const BrowseCandidates: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [profession, setProfession] = useState<string>("");
@@ -60,8 +67,8 @@ const BrowseCandidates: React.FC = () => {
           name: `${data.first_name} ${data.last_name}`, // Concatenate first_name and last_name
           profileImageUrl:
             data.profileImageUrl || "https://via.placeholder.com/150",
-          profession: data.profession,
-          qualification: data.qualification,
+          profession: truncate(data.profession, 30), // Truncate profession to 35 characters
+          qualification: truncate(data.qualification, 30), // Truncate qualification to 50 characters
         };
       });
       setUsers(usersList);

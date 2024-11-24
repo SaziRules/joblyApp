@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { View, FlatList } from "react-native";
+import { FlatList, TextInput, View } from "react-native";
 import { db } from "@/firebaseConfig"; // Adjust the import path accordingly
 import InboxItem from "@/components/InboxItem"; // Adjust the import path accordingly
 import { images } from "@/constants";
 import {
   collection,
   getDocs,
+  getDoc,
+  doc,
   query,
   where,
+  orderBy,
+  limit,
   DocumentData,
   Query,
   CollectionReference,
@@ -17,7 +21,7 @@ import { ImageSourcePropType } from "react-native";
 
 interface Chat {
   id: string;
-  image: string; // Make image non-optional
+  image: string;
   title: string;
   description: string;
   time: string;
@@ -28,6 +32,13 @@ interface User {
   name: string;
   profileImageUrl?: string;
 }
+
+const truncate = (str: string, maxLength: number) => {
+  if (str.length > maxLength) {
+    return str.slice(0, maxLength) + "...";
+  }
+  return str;
+};
 
 const InboxList: React.FC = () => {
   const [messages, setMessages] = useState<Chat[]>([]);
@@ -45,24 +56,58 @@ const InboxList: React.FC = () => {
       );
 
       const querySnapshot = await getDocs(q);
-      const chatPromises = querySnapshot.docs.map(async (doc) => {
-        const data = doc.data();
+      const chatPromises = querySnapshot.docs.map(async (chatDoc) => {
+        const data = chatDoc.data();
         const otherMemberId = data.members.find(
           (memberId: string) => memberId !== currentUserId
         );
 
         if (otherMemberId) {
-          const userDoc = await getDocs(
-            query(collection(db, "users"), where("id", "==", otherMemberId))
+          const userDocRef = doc(db, "users", otherMemberId);
+          const userDocSnap = await getDoc(userDocRef);
+
+          if (!userDocSnap.exists()) {
+            console.error(
+              `User data for member ID ${otherMemberId} not found.`
+            );
+            return null;
+          }
+
+          const userData = userDocSnap.data() as User;
+
+          // Fetch the last message
+          const messagesCollection = collection(
+            db,
+            `chats/${chatDoc.id}/messages`
           );
-          const userData = userDoc.docs[0]?.data() as User;
+          const messagesQuery = query(
+            messagesCollection,
+            orderBy("timestamp", "desc"),
+            limit(1)
+          );
+          const messageSnapshot = await getDocs(messagesQuery);
+
+          if (messageSnapshot.empty) {
+            console.log(`No messages found for chat ID ${chatDoc.id}`);
+          }
+
+          const lastMessageDoc = messageSnapshot.docs[0];
+          const lastMessage = lastMessageDoc?.data()?.text || "No messages yet";
+          const lastMessageTime =
+            lastMessageDoc
+              ?.data()
+              ?.timestamp?.toDate()
+              ?.toLocaleTimeString(undefined, {
+                hour: "2-digit",
+                minute: "2-digit",
+              }) || "";
 
           return {
-            id: doc.id,
+            id: chatDoc.id,
             image: userData.profileImageUrl || images.placeholder,
             title: userData.name,
-            description: data.description,
-            time: data.time,
+            description: truncate(lastMessage, 40), // Truncate to 30 characters
+            time: lastMessageTime,
           };
         }
 
