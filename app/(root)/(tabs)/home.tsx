@@ -1,5 +1,4 @@
 import JobCard from "@/components/JobCard";
-import JobSpec from "@/app/(docs)/jobspec"; // Import JobSpec component
 import { useUser } from "@clerk/clerk-expo";
 import { Text, TextInput, View, SafeAreaView } from "react-native";
 import React, { useState, useEffect } from "react";
@@ -39,9 +38,19 @@ export default function Page() {
         } else {
           console.log("Documents found:", querySnapshot.size);
         }
+
         const jobsList = querySnapshot.docs.map((doc) => {
           const data = doc.data() as Job;
           console.log("Document data:", data); // Log each document data
+
+          // Check and log each field to ensure data integrity
+          console.log("Position:", data.Position);
+          console.log("Company:", data.Company);
+          console.log("Salary:", data.Salary);
+          console.log("Type:", data.Type);
+          console.log("Location:", data.Location);
+          console.log("Setting:", data.Setting);
+          console.log("description:", data.description);
 
           // Apply truncation safely
           const positionTruncated = truncate(data.Position, 30);
@@ -67,6 +76,7 @@ export default function Page() {
             createdAt: data.createdAt?.toDate() ?? new Date(), // Ensure Firestore Timestamp to JS Date conversion
           };
         });
+
         console.log("Fetched Jobs List: ", jobsList); // Log the full jobs list
         setJobs(jobsList);
       } catch (error) {
@@ -101,16 +111,6 @@ export default function Page() {
         appliedJobs={appliedJobs}
         setAppliedJobs={setAppliedJobs}
       />
-
-      {/* Ensure JobSpec is correctly used here and receives the correct props */}
-      {/* Assuming you're rendering JobSpec conditionally or for testing purposes */}
-      {jobs.length > 0 && (
-        <JobSpec
-          appliedJobs={appliedJobs}
-          setAppliedJobs={setAppliedJobs}
-          job={JSON.stringify(jobs[0])} // Just for testing, passing the first job
-        />
-      )}
     </SafeAreaView>
   );
 }
