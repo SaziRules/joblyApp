@@ -38,7 +38,6 @@ export default function Page() {
         } else {
           console.log("Documents found:", querySnapshot.size);
         }
-
         const jobsList = querySnapshot.docs.map((doc) => {
           const data = doc.data() as Job;
           console.log("Document data:", data); // Log each document data
@@ -61,22 +60,21 @@ export default function Page() {
             id: doc.id,
             Position: positionTruncated,
             Company: companyTruncated,
-            Salary: data.Salary ?? "N/A",
-            Type: data.Type ?? "N/A",
-            Location: data.Location ?? "N/A",
-            Setting: data.Setting ?? "N/A",
+            Salary: data.Salary,
+            Type: data.Type,
+            Location: data.Location,
+            Setting: data.Setting,
             description: descriptionTruncated,
-            Description: data.Description ?? "N/A",
-            Deadline: data.Deadline ?? "N/A",
-            Education: data.Education ?? "N/A",
-            Experience: data.Experience ?? "N/A",
-            Skills: data.Skills ?? "N/A",
-            Duties: data.Duties ?? "N/A",
-            Benefits: data.Benefits ?? "N/A",
-            createdAt: data.createdAt?.toDate() ?? new Date(), // Ensure Firestore Timestamp to JS Date conversion
+            Description: data.Description,
+            Deadline: data.Deadline,
+            Education: data.Education,
+            Experience: data.Experience,
+            Skills: data.Skills,
+            Duties: data.Duties,
+            Benefits: data.Benefits,
+            createdAt: data.createdAt?.toDate(), // Ensure Firestore Timestamp to JS Date conversion
           };
         });
-
         console.log("Fetched Jobs List: ", jobsList); // Log the full jobs list
         setJobs(jobsList);
       } catch (error) {

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { View, Text, ScrollView, Image, Alert } from "react-native";
 import { images } from "@/constants";
 import CustomButton from "@/components/CustomButton";
 import { useLocalSearchParams, router } from "expo-router";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 
 interface JobData {
@@ -21,65 +21,35 @@ interface JobData {
   Type: string;
   Setting: string;
   Deadline: string;
-  Status?: string;
 }
 
 const JobSpec: React.FC = () => {
   const { job } = useLocalSearchParams();
-  const [jobData, setJobData] = useState<JobData | null>(null);
-  const [buttonText, setButtonText] = useState("Apply Now");
-  const [isDisabled, setIsDisabled] = useState(false);
 
-  useEffect(() => {
-    const fetchJobData = async () => {
-      try {
-        if (job) {
-          const jobDataParsed: JobData = JSON.parse(job as string);
-          setJobData(jobDataParsed);
-
-          const jobRef = doc(db, "vacancies", jobDataParsed.id);
-          const docSnap = await getDoc(jobRef);
-          if (docSnap.exists()) {
-            const jobDocData = docSnap.data() as JobData;
-            setJobData(jobDocData);
-
-            // Set the button text based on the Status field
-            if (jobDocData.Status === "applied") {
-              setButtonText("Applied");
-              setIsDisabled(true); // Disable the button
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching job data: ", error);
-      }
-    };
-
-    fetchJobData();
-  }, [job]);
+  let jobData: JobData;
+  try {
+    console.log("Received job parameter:", job);
+    jobData = JSON.parse(job as string);
+    console.log("Parsed jobData:", jobData);
+  } catch (error) {
+    console.error("Error parsing job JSON:", error);
+    return <Text>Error loading job details</Text>;
+  }
 
   const handleApplyNow = async () => {
-    if (jobData) {
-      try {
-        const jobRef = doc(db, "vacancies", jobData.id);
-        await updateDoc(jobRef, { Status: "applied" });
-        Alert.alert(
-          "Application Submitted",
-          "Your application has been successfully submitted!"
-        );
-        setButtonText("Applied");
-        setIsDisabled(true); // Disable the button after applying
-        router.replace("/(tabs)/home");
-      } catch (error) {
-        console.error("Error applying for job: ", error);
-        Alert.alert("Error", "There was an error applying for the job.");
-      }
+    try {
+      const jobRef = doc(db, "vacancies", jobData.id);
+      await updateDoc(jobRef, { Status: "applied" });
+      Alert.alert(
+        "Application Submitted",
+        "Your application has been successfully submitted!"
+      );
+      router.replace("/(tabs)/home");
+    } catch (error) {
+      console.error("Error applying for job: ", error);
+      Alert.alert("Error", "There was an error applying for the job.");
     }
   };
-
-  if (!jobData) {
-    return <Text>Loading...</Text>;
-  }
 
   return (
     <View className="flex-1 bg-white">
@@ -149,11 +119,7 @@ const JobSpec: React.FC = () => {
         </View>
       </ScrollView>
       <View className="absolute bottom-0 w-full mb-4 p-4">
-        <CustomButton
-          title={buttonText}
-          onPress={handleApplyNow}
-          disabled={isDisabled}
-        />
+        <CustomButton title="Apply Now" onPress={handleApplyNow} />
         <CustomButton
           title="Cancel"
           className="bg-[#2e2e2e] mt-4"

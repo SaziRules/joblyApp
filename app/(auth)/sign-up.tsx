@@ -123,7 +123,7 @@ const SignUp = () => {
             onChangeText={(value) => setForm({ ...form, password: value })}
           />
           <CustomButton
-            title="Sign Up"
+            title="Sign Up As A Job Seeker"
             onPress={onSignUpPress}
             className="mt-6"
           />

@@ -19,6 +19,7 @@ export interface Job {
   Duties: string;
   Benefits: string;
   createdAt: firebase.firestore.Timestamp; // Use Firestore Timestamp
+  Status: string;
 }
 
 

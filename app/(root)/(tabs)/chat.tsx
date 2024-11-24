@@ -28,9 +28,7 @@ const Chat = () => {
         </View>
       </View>
       <View className="flex-1 mt-[200px]">
-        <ScrollView>
-          <InboxList />
-        </ScrollView>
+        <InboxList />
       </View>
     </SafeAreaView>
   );
