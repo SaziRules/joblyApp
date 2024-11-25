@@ -45,6 +45,7 @@ export default function Page() {
   const [filteredJobSeekers, setFilteredJobSeekers] = useState<
     UserCardProps["users"]
   >([]); // State to store filtered job seekers data
+  const [filteredJobs, setFilteredJobs] = useState<Job[]>([]); // State to store filtered jobs
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -109,6 +110,7 @@ export default function Page() {
         });
         console.log("Fetched Jobs List: ", jobsList); // Log the full jobs list
         setJobs(jobsList);
+        setFilteredJobs(jobsList); // Initialize filteredJobs with all jobs
       } catch (error) {
         console.error("Error fetching jobs: ", error); // Log any errors
       }
@@ -159,6 +161,11 @@ export default function Page() {
         user.profession.toLowerCase().includes(text.toLowerCase())
       );
       setFilteredJobSeekers(filtered);
+    } else if (role === "Job-Seeker") {
+      const filtered = jobs.filter((job) =>
+        job.Position.toLowerCase().includes(text.toLowerCase())
+      );
+      setFilteredJobs(filtered);
     }
   };
 
@@ -166,10 +173,14 @@ export default function Page() {
     <SafeAreaView>
       <View className="flex px-5 pt-10">
         <Text className="font-JakartaSemiBold text-lg">
-          Find your perfect job
+          {role === "Employer"
+            ? "Search verified professionals"
+            : "Find your perfect job"}
         </Text>
         <Text className="font-Jakarta text-[14px] text-[#9b9a9a9a]">
-          Based on your preferences on Jobly
+          {role === "Employer"
+            ? "Based on your immediate needs"
+            : "Based on your preferences on Jobly"}
         </Text>
       </View>
       <View className="mx-4 mt-4">
@@ -183,7 +194,7 @@ export default function Page() {
 
       {role === "Job-Seeker" && (
         <JobCard
-          data={jobs}
+          data={filteredJobs}
           appliedJobs={appliedJobs}
           setAppliedJobs={setAppliedJobs}
         />

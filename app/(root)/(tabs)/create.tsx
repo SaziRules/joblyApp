@@ -97,56 +97,62 @@ const Create = () => {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => {
-            router.replace("/(resume)/vacancy");
-          }}
-          className="flex p-5 bg-white rounded-lg mx-5 mt-3"
-        >
-          <View className="flex flex-row items-center justify-between">
-            <View>
-              <Text className="font-JakartaBold text-[16px] text-[#1e1e1e]">
-                Post a vacancy
-              </Text>
-              <Text className="font-JakartaExtraLight text-sm text-[#9b9a9a] mt-[-2]">
-                Increase the quality of your hire.
-              </Text>
+        {role !== "Job-Seeker" && (
+          <TouchableOpacity
+            onPress={() => {
+              router.replace("/(resume)/vacancy");
+            }}
+            className="flex p-5 bg-white rounded-lg mx-5 mt-3"
+          >
+            <View className="flex flex-row items-center justify-between">
+              <View>
+                <Text className="font-JakartaBold text-[16px] text-[#1e1e1e]">
+                  Post a vacancy
+                </Text>
+                <Text className="font-JakartaExtraLight text-sm text-[#9b9a9a] mt-[-2]">
+                  Increase the quality of your hire.
+                </Text>
+              </View>
+              <View>
+                <Text className=" text-2xl text-[#1e1e1e] font-JakartaLight">
+                  +
+                </Text>
+              </View>
             </View>
-            <View>
-              <Text className=" text-2xl text-[#1e1e1e] font-JakartaLight">
-                +
-              </Text>
-            </View>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        )}
 
-        <QuickAction
-          onPress={() => {
-            router.replace("/(root)/(tabs)/home");
-          }}
-          title="Browse Candidates"
-          subtitle="Find the best candidate for your next hire."
-          icon={
-            <Image
-              source={icons.search}
-              className="h-[24px] w-[24px] items-center"
-            />
-          }
-        />
+        {role !== "Job-Seeker" && (
+          <QuickAction
+            onPress={() => {
+              router.replace("/(root)/(tabs)/home");
+            }}
+            title="Browse Candidates"
+            subtitle="Find the best candidate for your next hire."
+            icon={
+              <Image
+                source={icons.search}
+                className="h-[24px] w-[24px] items-center"
+              />
+            }
+          />
+        )}
 
-        <QuickAction
-          onPress={() => {
-            router.replace("/(tabs)/create");
-          }}
-          title="Browse Companies"
-          subtitle="Let's make your next great hire happen."
-          icon={
-            <Image
-              source={icons.search}
-              className="h-[24px] w-[24px] items-center"
-            />
-          }
-        />
+        {role !== "Employer" && (
+          <QuickAction
+            onPress={() => {
+              router.replace("/(tabs)/create");
+            }}
+            title="Browse Companies"
+            subtitle="Let's make your next great hire happen."
+            icon={
+              <Image
+                source={icons.search}
+                className="h-[24px] w-[24px] items-center"
+              />
+            }
+          />
+        )}
 
         <QuickAction
           onPress={() => {

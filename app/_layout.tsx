@@ -4,6 +4,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
 import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
+import { StripeProvider } from "@stripe/stripe-react-native";
 import { Slot } from "expo-router";
 import { tokenCache } from "@/lib/auth";
 
@@ -41,17 +42,19 @@ export default function RootLayout() {
 
   return (
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-      <ClerkLoaded>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="(root)" options={{ headerShown: false }} />
-          <Stack.Screen name="(resume)" options={{ headerShown: false }} />
-          <Stack.Screen name="(docs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(chat)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-      </ClerkLoaded>
+      <StripeProvider apiKey={publishableKey}>
+        <ClerkLoaded>
+          <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="(root)" options={{ headerShown: false }} />
+            <Stack.Screen name="(resume)" options={{ headerShown: false }} />
+            <Stack.Screen name="(docs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(chat)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+        </ClerkLoaded>
+      </StripeProvider>
     </ClerkProvider>
   );
 }
