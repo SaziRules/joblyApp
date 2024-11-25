@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, TextInput, View } from "react-native";
+import { FlatList, View, Text, TouchableOpacity, Image } from "react-native";
 import { db } from "@/firebaseConfig"; // Adjust the import path accordingly
-import InboxItem from "@/components/InboxItem"; // Adjust the import path accordingly
 import { images } from "@/constants";
 import {
   collection,
@@ -17,6 +16,7 @@ import {
   CollectionReference,
 } from "firebase/firestore";
 import { useUser } from "@clerk/clerk-expo";
+import { useRouter } from "expo-router";
 import { ImageSourcePropType } from "react-native";
 
 interface Chat {
@@ -50,6 +50,7 @@ const InboxList: React.FC<InboxListProps> = ({ users }) => {
   const { user } = useUser();
   const currentUserId = user?.id;
   const currentUserRole = user?.publicMetadata?.role; // Assume role is stored in public metadata
+  const router = useRouter();
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -141,17 +142,30 @@ const InboxList: React.FC<InboxListProps> = ({ users }) => {
     return { uri: image };
   };
 
+  const handleOpenChat = (chatId: string) => {
+    router.push({ pathname: "/(chat)/mainchat", params: { chatId } });
+  };
+
   return (
     <FlatList
       data={messages}
+      className="px-4"
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
-        <InboxItem
-          image={getImageSource(item.image)}
-          title={item.title}
-          description={item.description}
-          time={item.time}
-        />
+        <TouchableOpacity
+          onPress={() => handleOpenChat(item.id)}
+          className="flex-row p-4 bg-white rounded-lg mb-2 shadow-md"
+        >
+          <Image
+            source={getImageSource(item.image)}
+            className="w-12 h-12 rounded-full"
+          />
+          <View className="ml-4 justify-center flex-1">
+            <Text className="text-lg font-semibold">{item.title}</Text>
+            <Text className="text-sm text-gray-500">{item.description}</Text>
+          </View>
+          <Text className="text-sm text-gray-500">{item.time}</Text>
+        </TouchableOpacity>
       )}
     />
   );

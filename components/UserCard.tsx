@@ -1,69 +1,45 @@
-import React, { useState } from "react";
-import { icons } from "@/constants";
-import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
-import PaymentModal from "./PaymentModal"; // Import the PaymentModal component
+import React from "react";
+import { View, Text, Image, TouchableOpacity, FlatList } from "react-native";
+
+interface User {
+  id: string;
+  name: string;
+  profession: string;
+  qualification: string;
+  location: string;
+  profileImageUrl?: string;
+}
 
 interface UserCardProps {
-  users: {
-    id: string;
-    name: string;
-    profession: string;
-    qualification: string;
-    location: string; // Added location to the props
-    profileImageUrl?: string;
-  }[];
-  onPress: () => void; // Add onPress to props
+  users: User[];
+  onPress: (user: User) => void;
 }
 
 const UserCard: React.FC<UserCardProps> = ({ users, onPress }) => {
-  const [isModalVisible, setModalVisible] = useState(false); // State for modal visibility
-
-  const handlePress = () => {
-    setModalVisible(true); // Show the modal
-  };
-
   return (
-    <>
-      <ScrollView className="h-full">
-        {users.map((user) => (
-          <TouchableOpacity
-            key={user.id}
-            onPress={handlePress}
-            className="bg-white rounded-lg mt-4 p-4 mx-4"
-          >
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center">
-                <Image
-                  source={{
-                    uri:
-                      user.profileImageUrl || "https://via.placeholder.com/150",
-                  }}
-                  className="h-16 w-16 rounded-full"
-                />
-                <View className="ml-4">
-                  <Text className="text-lg font-JakartaBold">
-                    {user.profession}
-                  </Text>
-                  <Text className="text-gray-500 font-Jakarta">
-                    {user.qualification}
-                  </Text>
-                  <Text className="text-gray-500 font-Jakarta">
-                    {user.location}
-                  </Text>
-                </View>
-              </View>
-              <View>
-                <Image source={icons.eyecross} className="h-5 w-5" />
-              </View>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-      <PaymentModal
-        visible={isModalVisible}
-        onClose={() => setModalVisible(false)}
-      />
-    </>
+    <FlatList
+      data={users}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => (
+        <TouchableOpacity
+          onPress={() => onPress(item)}
+          className="flex-row p-4 bg-white rounded-lg mb-2 shadow-md"
+        >
+          <Image
+            source={{
+              uri: item.profileImageUrl || "https://via.placeholder.com/150",
+            }}
+            className="w-16 h-16 rounded-full"
+          />
+          <View className="ml-4 justify-center">
+            <Text className="text-lg font-semibold">{item.profession}</Text>
+            <Text className="text-sm text-gray-500">{item.qualification}</Text>
+            <Text className="text-sm text-gray-500">{item.location}</Text>
+          </View>
+        </TouchableOpacity>
+      )}
+      contentContainerStyle={{ paddingHorizontal: 16 }}
+    />
   );
 };
 

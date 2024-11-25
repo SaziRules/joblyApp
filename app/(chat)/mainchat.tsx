@@ -22,6 +22,8 @@ import {
   orderBy,
   onSnapshot,
   serverTimestamp,
+  getDoc,
+  doc,
 } from "firebase/firestore";
 import { useUser } from "@clerk/clerk-expo";
 import { RootStackParamList } from "@/navigationTypes"; // Import the navigation types
@@ -37,6 +39,37 @@ const MainChat = () => {
   const currentUserId = user?.id;
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [creatorData, setCreatorData] = useState<{
+    name: string;
+    profileImageUrl: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const fetchChatCreator = async () => {
+      const chatDocRef = doc(db, "chats", chatId);
+      const chatDocSnap = await getDoc(chatDocRef);
+      if (chatDocSnap.exists()) {
+        const chatData = chatDocSnap.data();
+        const creatorId = chatData?.members?.find(
+          (id: string) => id !== currentUserId
+        );
+        if (creatorId) {
+          const userDocRef = doc(db, "users", creatorId);
+          const userDocSnap = await getDoc(userDocRef);
+          if (userDocSnap.exists()) {
+            const userData = userDocSnap.data();
+            setCreatorData({
+              name: userData.name,
+              profileImageUrl:
+                userData.profileImageUrl || "https://via.placeholder.com/150",
+            });
+          }
+        }
+      }
+    };
+
+    fetchChatCreator();
+  }, [chatId, currentUserId]);
 
   useEffect(() => {
     const q = query(
@@ -74,7 +107,7 @@ const MainChat = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ScrollView className="flex-1">
+      <View className="flex-1">
         <View className="relative w-full h-64">
           <Image source={images.signUpCar} className="absolute w-full h-full" />
           <TouchableOpacity
@@ -85,29 +118,38 @@ const MainChat = () => {
           >
             <Icon name="arrow-back" size={24} color="#000" />
           </TouchableOpacity>
-          <View className="absolute bottom-5 left-7 flex-row items-center">
-            <Image source={images.airbnb} className="h-12 w-12 rounded-full" />
+          <View className="absolute bottom-5 left-7 flex-row items-center px-5">
+            <Image
+              source={{
+                uri:
+                  creatorData?.profileImageUrl ||
+                  "https://via.placeholder.com/150",
+              }}
+              className="h-12 w-12 rounded-full"
+            />
             <Text className="text-2xl text-black font-semibold ml-3">
-              Airbnb
+              {creatorData?.name || "Loading..."}
             </Text>
           </View>
         </View>
-        <View className="flex-1 mr-1 p-2">
-          {messages.map((message) => (
-            <ChatMessage
-              key={message.id}
-              message={message.text}
-              isOutgoing={message.senderId === currentUserId}
-              timestamp={getMessageTimestamp(message)}
-              profileImageUrl={
-                message.senderId === currentUserId
-                  ? user?.imageUrl || "https://via.placeholder.com/150"
-                  : "https://example.com/incoming.jpg"
-              } // Replace with the correct profile image URL
-            />
-          ))}
-        </View>
-        <View className="flex-row items-center mx-5 mb-11 rounded-full shadow-md bg-white p-2">
+        <ScrollView className="flex-1 px-5 mt-4">
+          <View className="items-center">
+            {messages.map((message) => (
+              <ChatMessage
+                key={message.id}
+                message={message.text}
+                isOutgoing={message.senderId === currentUserId}
+                timestamp={getMessageTimestamp(message)}
+                profileImageUrl={
+                  message.senderId === currentUserId
+                    ? user?.imageUrl || "https://via.placeholder.com/150"
+                    : "https://example.com/incoming.jpg"
+                }
+              />
+            ))}
+          </View>
+        </ScrollView>
+        <View className="flex-row items-center mx-5 mb-4 rounded-full shadow-md bg-white p-2 absolute bottom-0 left-0 right-0">
           <TextInput
             placeholder="Type your message..."
             value={newMessage}
@@ -121,7 +163,7 @@ const MainChat = () => {
             <Icon name="send" size={24} color="#fff" />
           </TouchableOpacity>
         </View>
-      </ScrollView>
+      </View>
     </TouchableWithoutFeedback>
   );
 };
