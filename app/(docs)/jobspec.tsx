@@ -1,9 +1,17 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, Image, Alert } from "react-native";
 import { images } from "@/constants";
 import CustomButton from "@/components/CustomButton";
 import { useLocalSearchParams, router } from "expo-router";
-import { doc, updateDoc } from "firebase/firestore";
+import {
+  doc,
+  updateDoc,
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 
 interface JobData {
@@ -25,6 +33,10 @@ interface JobData {
 
 const JobSpec: React.FC = () => {
   const { job } = useLocalSearchParams();
+  const [hasApplied, setHasApplied] = useState(false);
+
+  // Assume currentUser is the authenticated user viewing the job
+  const currentUser = { id: "currentUserId" }; // Replace with actual user ID
 
   let jobData: JobData;
   try {
@@ -39,7 +51,14 @@ const JobSpec: React.FC = () => {
   const handleApplyNow = async () => {
     try {
       const jobRef = doc(db, "vacancies", jobData.id);
-      await updateDoc(jobRef, { Status: "applied" });
+      const applicationsRef = collection(jobRef, "applications");
+
+      // Add a new application document
+      await addDoc(applicationsRef, {
+        userId: currentUser.id,
+        status: "applied",
+      });
+
       Alert.alert(
         "Application Submitted",
         "Your application has been successfully submitted!"
@@ -50,6 +69,28 @@ const JobSpec: React.FC = () => {
       Alert.alert("Error", "There was an error applying for the job.");
     }
   };
+
+  const checkApplicationStatus = async () => {
+    try {
+      const jobRef = doc(db, "vacancies", jobData.id);
+      const applicationsRef = collection(jobRef, "applications");
+      const q = query(applicationsRef, where("userId", "==", currentUser.id));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        setHasApplied(true);
+        console.log("User has already applied for this job.");
+      } else {
+        console.log("User has not applied for this job.");
+      }
+    } catch (error) {
+      console.error("Error checking application status: ", error);
+    }
+  };
+
+  useEffect(() => {
+    checkApplicationStatus();
+  }, []);
 
   return (
     <View className="flex-1 bg-white">
@@ -119,7 +160,12 @@ const JobSpec: React.FC = () => {
         </View>
       </ScrollView>
       <View className="absolute bottom-0 w-full mb-4 p-4">
-        <CustomButton title="Apply Now" onPress={handleApplyNow} />
+        <CustomButton
+          title={hasApplied ? "Applied" : "Apply Now"}
+          onPress={handleApplyNow}
+          disabled={hasApplied}
+          className={hasApplied ? "bg-gray-500" : ""}
+        />
         <CustomButton
           title="Cancel"
           className="bg-[#2e2e2e] mt-4"

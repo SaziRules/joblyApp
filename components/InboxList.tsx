@@ -30,7 +30,12 @@ interface Chat {
 interface User {
   id: string;
   name: string;
+  role: string; // Added role property
   profileImageUrl?: string;
+}
+
+interface InboxListProps {
+  users: User[]; // Define users prop
 }
 
 const truncate = (str: string, maxLength: number) => {
@@ -40,10 +45,11 @@ const truncate = (str: string, maxLength: number) => {
   return str;
 };
 
-const InboxList: React.FC = () => {
+const InboxList: React.FC<InboxListProps> = ({ users }) => {
   const [messages, setMessages] = useState<Chat[]>([]);
   const { user } = useUser();
   const currentUserId = user?.id;
+  const currentUserRole = user?.publicMetadata?.role; // Assume role is stored in public metadata
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -74,6 +80,14 @@ const InboxList: React.FC = () => {
           }
 
           const userData = userDocSnap.data() as User;
+
+          // Filter users based on role
+          if (
+            (currentUserRole === "JobSeeker" && userData.role !== "Employer") ||
+            (currentUserRole === "Employer" && userData.role !== "JobSeeker")
+          ) {
+            return null;
+          }
 
           // Fetch the last message
           const messagesCollection = collection(
@@ -106,7 +120,7 @@ const InboxList: React.FC = () => {
             id: chatDoc.id,
             image: userData.profileImageUrl || images.placeholder,
             title: userData.name,
-            description: truncate(lastMessage, 40), // Truncate to 30 characters
+            description: truncate(lastMessage, 40), // Truncate to 40 characters
             time: lastMessageTime,
           };
         }
@@ -121,7 +135,7 @@ const InboxList: React.FC = () => {
     };
 
     fetchChats();
-  }, [currentUserId]);
+  }, [currentUserId, currentUserRole]);
 
   const getImageSource = (image: string): ImageSourcePropType => {
     return { uri: image };

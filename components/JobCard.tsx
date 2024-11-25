@@ -1,14 +1,7 @@
 import { Job } from "@/types/type";
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  FlatList,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, Image, TouchableOpacity, FlatList } from "react-native";
 import React, { useState, useEffect } from "react";
-import { collection, getDoc, doc } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import { icons, images } from "@/constants";
 import { router } from "expo-router";
@@ -31,32 +24,31 @@ const JobCard: React.FC<JobCardProps> = ({
     );
   }
 
-  const [statuses, setStatuses] = useState<{ [key: string]: string }>({});
+  const currentUser = { id: "currentUserId" }; // Replace with actual user ID
+  const [applicationStatus, setApplicationStatus] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   useEffect(() => {
-    const fetchStatuses = async () => {
-      const statusMap: { [key: string]: string } = {};
-      for (const item of data) {
-        const jobRef = doc(db, "vacancies", item.id);
-        const docSnap = await getDoc(jobRef);
-        if (docSnap.exists()) {
-          const jobData = docSnap.data();
-          if (jobData && jobData.Status) {
-            statusMap[item.id] = jobData.Status;
-          }
-        }
+    const fetchApplicationStatuses = async () => {
+      const statusMap: { [key: string]: boolean } = {};
+      for (const job of data) {
+        const jobRef = collection(db, "vacancies", job.id, "applications");
+        const q = query(jobRef, where("userId", "==", currentUser.id));
+        const querySnapshot = await getDocs(q);
+        statusMap[job.id] = !querySnapshot.empty;
       }
-      setStatuses(statusMap);
+      setApplicationStatus(statusMap);
     };
 
-    fetchStatuses();
+    fetchApplicationStatuses();
   }, [data]);
 
   return (
     <FlatList
       data={data}
       renderItem={({ item }) => {
-        const isApplied = statuses[item.id] === "applied";
+        const hasApplied = applicationStatus[item.id];
         return (
           <TouchableOpacity
             key={item.id}
@@ -95,10 +87,12 @@ const JobCard: React.FC<JobCardProps> = ({
                 {item.Salary} / Month
               </Text>
               <TouchableOpacity
-                className={`bg-[#FEC300] rounded-full w-[100px] py-2 px-2 flex items-center mt-5 mb-2 ${isApplied ? "opacity-50" : ""}`}
-                disabled={isApplied}
+                className={`${
+                  hasApplied ? "bg-gray-300" : "bg-[#FEC300]"
+                } rounded-full w-[100px] py-2 px-2 flex items-center mt-5 mb-2`}
+                disabled={hasApplied}
                 onPress={() => {
-                  if (!isApplied) {
+                  if (!hasApplied) {
                     router.push({
                       pathname: "/(docs)/jobspec",
                       params: {
@@ -109,7 +103,7 @@ const JobCard: React.FC<JobCardProps> = ({
                 }}
               >
                 <Text className="text-[12px] font-JakartaBold text-[#1e1e1e]">
-                  {isApplied ? "Applied" : "Easily Apply"}
+                  {hasApplied ? "Applied" : "Easily Apply"}
                 </Text>
               </TouchableOpacity>
             </View>
