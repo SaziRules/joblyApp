@@ -15,7 +15,7 @@ interface UserCardProps {
   onPress: (user: User) => void;
 }
 
-const UserCard: React.FC<UserCardProps> = ({ users, onPress }) => {
+const AllUserCard: React.FC<UserCardProps> = ({ users, onPress }) => {
   return (
     <FlatList
       data={users}
@@ -43,4 +43,4 @@ const UserCard: React.FC<UserCardProps> = ({ users, onPress }) => {
   );
 };
 
-export default UserCard;
+export default AllUserCard;

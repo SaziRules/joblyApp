@@ -15,8 +15,6 @@ import {
 } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import { Job } from "@/types/type";
-import AllUserCard from "@/components/AllUserCard";
-import { useRouter } from "expo-router";
 
 const truncate = (str: string, maxLength: number) => {
   if (str && str.length > maxLength) {
@@ -25,24 +23,28 @@ const truncate = (str: string, maxLength: number) => {
   return str;
 };
 
-interface User {
-  id: string;
-  name: string;
-  profession: string;
-  qualification: string;
-  location: string;
-  profileImageUrl?: string;
+interface UserCardProps {
+  users: {
+    id: string;
+    name: string;
+    profession: string;
+    qualification: string;
+    location: string; // Correct the spelling of 'location'
+    profileImageUrl?: string;
+  }[];
+  onPress: () => void;
 }
 
 export default function Page() {
   const { user } = useUser();
-  const router = useRouter();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [position, setPosition] = useState<string>("");
   const [appliedJobs, setAppliedJobs] = useState<string[]>([]); // State to track applied jobs
   const [role, setRole] = useState<string>(""); // State to store user role
-  const [jobSeekers, setJobSeekers] = useState<User[]>([]); // State to store job seekers data
-  const [filteredJobSeekers, setFilteredJobSeekers] = useState<User[]>([]); // State to store filtered job seekers data
+  const [jobSeekers, setJobSeekers] = useState<UserCardProps["users"]>([]); // State to store job seekers data
+  const [filteredJobSeekers, setFilteredJobSeekers] = useState<
+    UserCardProps["users"]
+  >([]); // State to store filtered job seekers data
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]); // State to store filtered jobs
 
   useEffect(() => {
@@ -167,14 +169,6 @@ export default function Page() {
     }
   };
 
-  const handleUserPress = (user: User) => {
-    // Explicitly type the user parameter
-    router.push({
-      pathname: "/(docs)/candidate-info",
-      params: { userId: user.id },
-    });
-  };
-
   return (
     <SafeAreaView>
       <View className="flex px-5 pt-10">
@@ -206,9 +200,9 @@ export default function Page() {
         />
       )}
       {role === "Employer" && (
-        <AllUserCard
+        <UserCard
           users={filteredJobSeekers} // Pass the filtered users array
-          onPress={handleUserPress} // Update the onPress handler
+          onPress={() => console.log("UserCard pressed")} // Example onPress handler
         />
       )}
     </SafeAreaView>
