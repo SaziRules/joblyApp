@@ -1,12 +1,17 @@
 import JobCard from "@/components/JobCard";
+import UserCard from "@/components/UserCard"; // Ensure this component is properly imported
 import { useUser } from "@clerk/clerk-expo";
 import { Text, TextInput, View, SafeAreaView } from "react-native";
 import React, { useState, useEffect } from "react";
 import {
   collection,
   getDocs,
+  doc,
+  getDoc,
   DocumentData,
   CollectionReference,
+  query,
+  where,
 } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import { Job } from "@/types/type";
@@ -18,11 +23,46 @@ const truncate = (str: string, maxLength: number) => {
   return str;
 };
 
+interface UserCardProps {
+  users: {
+    id: string;
+    name: string;
+    profession: string;
+    qualification: string;
+    location: string; // Correct the spelling of 'location'
+    profileImageUrl?: string;
+  }[];
+  onPress: () => void;
+}
+
 export default function Page() {
   const { user } = useUser();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [position, setPosition] = useState<string>("");
   const [appliedJobs, setAppliedJobs] = useState<string[]>([]); // State to track applied jobs
+  const [role, setRole] = useState<string>(""); // State to store user role
+  const [jobSeekers, setJobSeekers] = useState<UserCardProps["users"]>([]); // State to store job seekers data
+  const [filteredJobSeekers, setFilteredJobSeekers] = useState<
+    UserCardProps["users"]
+  >([]); // State to store filtered job seekers data
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (user?.id) {
+        const docRef = doc(db, "users", user.id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setRole(data.role); // Set the user role
+        } else {
+          console.log("No such document!");
+        }
+      }
+    };
+
+    fetchUserRole();
+  }, [user?.id]);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -41,15 +81,6 @@ export default function Page() {
         const jobsList = querySnapshot.docs.map((doc) => {
           const data = doc.data() as Job;
           console.log("Document data:", data); // Log each document data
-
-          // Check and log each field to ensure data integrity
-          console.log("Position:", data.Position);
-          console.log("Company:", data.Company);
-          console.log("Salary:", data.Salary);
-          console.log("Type:", data.Type);
-          console.log("Location:", data.Location);
-          console.log("Setting:", data.Setting);
-          console.log("description:", data.description);
 
           // Apply truncation safely
           const positionTruncated = truncate(data.Position, 30);
@@ -72,6 +103,7 @@ export default function Page() {
             Skills: data.Skills,
             Duties: data.Duties,
             Benefits: data.Benefits,
+            Status: data.Status ?? "open", // Ensure Status property is included
             createdAt: data.createdAt?.toDate(), // Ensure Firestore Timestamp to JS Date conversion
           };
         });
@@ -84,6 +116,51 @@ export default function Page() {
 
     fetchJobs();
   }, []);
+
+  useEffect(() => {
+    const fetchJobSeekers = async () => {
+      const colRef: CollectionReference<DocumentData> = collection(db, "users");
+      const q = query(colRef, where("role", "==", "Job-Seeker"));
+
+      try {
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.empty) {
+          console.log("No matching documents.");
+        } else {
+          console.log("Documents found:", querySnapshot.size);
+        }
+        const jobSeekersList = querySnapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            name: `${data.first_name} ${data.last_name}`,
+            profession: data.profession,
+            qualification: data.qualification,
+            location: data.location, // Add location to the data fetched
+            profileImageUrl: data.profileImageUrl,
+          };
+        });
+        setJobSeekers(jobSeekersList);
+        setFilteredJobSeekers(jobSeekersList); // Initialize filteredJobSeekers with all job seekers
+      } catch (error) {
+        console.error("Error fetching job seekers: ", error);
+      }
+    };
+
+    if (role === "Employer") {
+      fetchJobSeekers();
+    }
+  }, [role]);
+
+  const handlePositionChange = (text: string) => {
+    setPosition(text);
+    if (role === "Employer") {
+      const filtered = jobSeekers.filter((user) =>
+        user.profession.toLowerCase().includes(text.toLowerCase())
+      );
+      setFilteredJobSeekers(filtered);
+    }
+  };
 
   return (
     <SafeAreaView>
@@ -99,16 +176,24 @@ export default function Page() {
         <TextInput
           placeholder="Search by position..."
           value={position}
-          onChangeText={setPosition}
+          onChangeText={handlePositionChange}
           className="p-3 bg-gray-200 rounded-full mb-2"
         />
       </View>
 
-      <JobCard
-        data={jobs}
-        appliedJobs={appliedJobs}
-        setAppliedJobs={setAppliedJobs}
-      />
+      {role === "Job-Seeker" && (
+        <JobCard
+          data={jobs}
+          appliedJobs={appliedJobs}
+          setAppliedJobs={setAppliedJobs}
+        />
+      )}
+      {role === "Employer" && (
+        <UserCard
+          users={filteredJobSeekers} // Pass the filtered users array
+          onPress={() => console.log("UserCard pressed")} // Example onPress handler
+        />
+      )}
     </SafeAreaView>
   );
 }

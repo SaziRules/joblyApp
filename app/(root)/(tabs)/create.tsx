@@ -11,16 +11,36 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "@clerk/clerk-expo";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import InputField from "@/components/InputField";
 import QuickAction from "@/components/QuickAction";
 import { router } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
+import { db } from "@/firebaseConfig";
+import { doc, getDoc } from "firebase/firestore";
 
 const Create = () => {
   const { user } = useUser();
   const [visible, setVisible] = useState(false);
   const [step, setStep] = useState(1); // Initialize step state
+  const [role, setRole] = useState<string>("");
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (user?.id) {
+        const docRef = doc(db, "users", user.id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setRole(data.role); // Set the user role
+        } else {
+          console.log("No such document!");
+        }
+      }
+    };
+    fetchUserRole();
+  }, [user?.id]);
 
   const vacanyModal = () => setVisible(true);
   const hide = () => setVisible(false);
@@ -59,10 +79,14 @@ const Create = () => {
           <View className="flex flex-row items-center justify-between">
             <View>
               <Text className="font-JakartaBold text-[16px] text-[#1e1e1e]">
-                Create your resume
+                {role === "Employer"
+                  ? "Create your company profile"
+                  : "Create your resume"}
               </Text>
               <Text className="font-JakartaExtraLight text-sm text-[#9b9a9a] mt-[-2]">
-                Your very own professional resume.
+                {role === "Employer"
+                  ? "Standout with a comprehensive profile"
+                  : "Your very own professional resume"}
               </Text>
             </View>
             <View>
@@ -98,7 +122,7 @@ const Create = () => {
 
         <QuickAction
           onPress={() => {
-            router.replace("/(chat)/BrowseCandidates");
+            router.replace("/(root)/(tabs)/home");
           }}
           title="Browse Candidates"
           subtitle="Find the best candidate for your next hire."
