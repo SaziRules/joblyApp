@@ -5,12 +5,11 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
 import { StripeProvider } from "@stripe/stripe-react-native";
-import { Slot } from "expo-router";
 import { tokenCache } from "@/lib/auth";
 
-const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+const clerkPublishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+const stripePublishableKey = process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY!;
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -24,9 +23,9 @@ export default function RootLayout() {
     "Jakarta-SemiBold": require("../assets/fonts/PlusJakartaSans-SemiBold.ttf"),
   });
 
-  if (!publishableKey) {
+  if (!clerkPublishableKey || !stripePublishableKey) {
     throw new Error(
-      "Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env"
+      "Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY and EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY in your .env"
     );
   }
 
@@ -41,8 +40,8 @@ export default function RootLayout() {
   }
 
   return (
-    <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-      <StripeProvider apiKey={publishableKey}>
+    <ClerkProvider publishableKey={clerkPublishableKey} tokenCache={tokenCache}>
+      <StripeProvider publishableKey={stripePublishableKey}>
         <ClerkLoaded>
           <Stack>
             <Stack.Screen name="index" options={{ headerShown: false }} />
